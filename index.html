@@ -14,7 +14,7 @@
 #hint{position:absolute;left:50%;top:18%;transform:translateX(-50%);padding:10px 16px;font-size:13px;opacity:0;transition:opacity .2s;white-space:nowrap}#hint.show{opacity:1}
 #cross{position:absolute;left:50%;top:50%;width:7px;height:7px;border:1.5px solid #fff;border-radius:50%;transform:translate(-50%,-50%);opacity:.8}
 #bottom{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 16px;font-size:12px;color:#eaf0f7;white-space:nowrap}
-#menu{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(130deg,#07131ddd,#102b32bb);z-index:5;padding:20px}
+#menu{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(130deg,#07131ddd,#102b32bb);z-index:11;padding:20px;pointer-events:auto}
 #menu .card{width:min(560px,100%);padding:28px;text-align:center}h1{font-size:clamp(32px,7vw,56px);line-height:.98;margin:8px 0 12px;letter-spacing:-.05em}#menu p{color:#c4d1da;line-height:1.55;margin:0 auto 22px;max-width:440px}.eyebrow{color:var(--gold);font-weight:800;letter-spacing:.2em;font-size:11px}
 button,select,input{font:inherit}button{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;color:#14202b;background:linear-gradient(135deg,#ffe28a,#ffbd54);box-shadow:0 5px 18px #0003}button.secondary{background:#ffffff18;color:white;border:1px solid var(--line);box-shadow:none}button:active{transform:scale(.97)}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 #settings{display:none;position:fixed;z-index:9;top:118px;left:16px;width:min(300px,calc(100vw - 32px));padding:16px;text-align:left;pointer-events:auto}#settings label{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:10px 0;font-size:13px}#settings input{width:120px}#settings select{background:#182631;color:#fff;border:1px solid #ffffff33;border-radius:8px;padding:7px}#settings label{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:10px 0;font-size:13px}#settings input{width:130px}#settings select{background:#182631;color:#fff;border:1px solid #ffffff33;border-radius:8px;padding:7px}
@@ -134,8 +134,8 @@ dogDefs.forEach(d=>makeDog(...d));
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
 let sprintEnergy=100;
 let deviceMode='computer';
-$('chooseComputer').onclick=()=>{deviceMode='computer';document.body.classList.remove('mobile-mode');$('deviceChoice').style.display='none'};
-$('chooseMobile').onclick=()=>{deviceMode='mobile';document.body.classList.add('mobile-mode');$('deviceChoice').style.display='none'};
+$('chooseComputer').addEventListener('click',()=>{deviceMode='computer';document.body.classList.remove('mobile-mode');$('deviceChoice').style.display='none';$('menu').style.display='grid'});
+$('chooseMobile').addEventListener('click',()=>{deviceMode='mobile';document.body.classList.add('mobile-mode');$('deviceChoice').style.display='none';$('menu').style.display='grid'});
 
 
 // Blocky Roblox-style player with classic bacon hair
@@ -167,8 +167,8 @@ function showToast(title,sub){$('toastTitle').textContent=title;$('toastText').t
 function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of 10 discovered';}
 function openCollection(){$('collection').style.display='block';renderCollection();document.exitPointerLock?.()}
 function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===10)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
-function start(){playing=true;$('menu').style.display='none';if(deviceMode==='computer')renderer.domElement.requestPointerLock?.()}
-$('play').onclick=start;$('settingsBtn').onclick=()=>$('settings').style.display=$('settings').style.display==='block'?'none':'block';
+function start(){playing=true;$('deviceChoice').style.display='none';$('menu').style.display='none';$('settings').style.display='none';if(deviceMode==='computer')renderer.domElement.requestPointerLock?.()}
+$('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsBtn').onclick=()=>$('settings').style.display=$('settings').style.display==='block'?'none':'block';
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
 // Reduce look sensitivity as the camera zooms in; the settings slider remains the master sensitivity.
 function zoomAdjustedSensitivity(){const zoomOutAmount=(5.5-zoom)/5.5;return sensitivity*(.4+.6*zoomOutAmount)}
