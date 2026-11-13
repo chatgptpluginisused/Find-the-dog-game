@@ -31,6 +31,9 @@ body.mobile-mode #progress strong{font-size:16px}
 body.mobile-mode #bottom{display:none}
 body.mobile-mode #mobile{display:block}
 body.mobile-mode #cross{opacity:.35}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.mobileBtns button{touch-action: none;transition:transform .06s,background .06s;will-change:transform}
+.mobileBtns button:active{filter:brightness(1.22);transform:scale(.94)}
 #deviceChoice{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#07131df2,#173b43f2)}
 #deviceChoice .card{width:min(560px,100%);padding:28px;text-align:center}
 #deviceChoice h2{font-size:clamp(27px,6vw,42px);margin:10px 0}
@@ -132,7 +135,7 @@ function start(){playing=true;$('menu').style.display='none';if(deviceMode==='co
 $('play').onclick=start;$('settingsBtn').onclick=()=>$('settings').style.display=$('settings').style.display==='block'?'none':'block';
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
 $('difficulty').onchange=e=>{const v=e.target.value;showToast('Difficulty: '+e.target.options[e.target.selectedIndex].text,v==='easy'?'Dogs are easier to spot':v==='hard'?'Dogs are more hidden':'A balanced hunt')};
-$('closeCollection').onclick=()=>$('collection').style.display='none';$('collectionBtn').onclick=openCollection;
+$('closeCollection').onclick=()=>$('collection').style.display='none';$('collectionBtn').addEventListener('pointerdown',e=>{e.preventDefault();openCollection()});
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyM')openCollection();if(e.code==='Escape'&&$('collection').style.display==='block')$('collection').style.display='none';if(e.code==='ShiftLeft'||e.code==='ShiftRight')locked=!locked});
 document.addEventListener('keyup',e=>keys[e.code]=false);
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===renderer.domElement){yaw-=e.movementX*.002*sensitivity;pitch-=e.movementY*.002*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)}});
@@ -146,7 +149,8 @@ jumpButton.addEventListener('pointerdown',e=>{e.preventDefault();jumpHeld=true;j
 function releaseJump(e){jumpHeld=false}
 jumpButton.addEventListener('pointerup',releaseJump);jumpButton.addEventListener('pointercancel',releaseJump);jumpButton.addEventListener('lostpointercapture',releaseJump);
 
-$('shiftBtn').onclick=()=>{locked=!locked;$('shiftBtn').style.background=locked?'#ffe28a':'#ffffff18';$('shiftBtn').style.color=locked?'#14202b':'white'};
+function toggleShiftLock(){locked=!locked;$('shiftBtn').style.background=locked?'#ffe28a':'#ffffff18';$('shiftBtn').style.color=locked?'#14202b':'white'}
+$('shiftBtn').addEventListener('pointerdown',e=>{e.preventDefault();toggleShiftLock()});
 let stickVec={x:0,y:0},stickActive=false,stickId=null,stickOrigin={x:0,y:0};const stick=$('stick'),nub=$('nub'),movezone=$('movezone');
 movezone.style.cssText='position:absolute;left:0;top:0;width:50%;height:100%;pointer-events:auto;touch-action:none';
 movezone.addEventListener('pointerdown',e=>{if(stickActive)return;stickActive=true;stickId=e.pointerId;stickOrigin={x:e.clientX,y:e.clientY};stick.style.display='block';stick.style.left=stickOrigin.x+'px';stick.style.top=stickOrigin.y+'px';movezone.setPointerCapture(stickId);moveStick(e)});
