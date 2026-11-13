@@ -105,18 +105,19 @@ $('chooseMobile').onclick=()=>{deviceMode='mobile';document.body.classList.add('
 
 // Blocky Roblox-style player with classic bacon hair
 const avatar=new THREE.Group();
+const avatarHead=new THREE.Group();avatar.add(avatarHead);
 const skin=mat(0xe8b887), shirt=mat(0x3b79a8), pants=mat(0x263b68), shoes=mat(0x252a32), hair=mat(0x6b3022), hairLight=mat(0x91452d);
 function avatarPart(parent,w,h,d,material,x,y,z){const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh}
 avatarPart(avatar,.82,1.02,.46,shirt,0,1.34,0);
-avatarPart(avatar,.72,.72,.72,skin,0,2.27,0);
-avatarPart(avatar,.78,.12,.78,hair,0,2.66,-.015);
+avatarPart(avatarHead,.72,.72,.72,skin,0,2.27,0);
+avatarPart(avatarHead,.78,.12,.78,hair,0,2.66,-.015);
 for(let i=0;i<7;i++){
  const x=-.31+i*.103;
  const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(x,2.69,.29),new THREE.Vector3(x-.035,2.83,.22),new THREE.Vector3(x+.035,2.79,.04),new THREE.Vector3(x+.02,2.66,-.19)]);
- const lock=new THREE.Mesh(new THREE.TubeGeometry(curve,12,.052,7,false),i%2?hair:hairLight);lock.castShadow=true;avatar.add(lock);
+ const lock=new THREE.Mesh(new THREE.TubeGeometry(curve,12,.052,7,false),i%2?hair:hairLight);lock.castShadow=true;avatarHead.add(lock);
 }
 for(const side of [-1,1]){
- avatarPart(avatar,.12,.12,.055,mat(0x292323),side*.17,2.31,.367);
+ avatarPart(avatarHead,.12,.12,.055,mat(0x292323),side*.17,2.31,.367);
  const armPivot=new THREE.Group();armPivot.position.set(side*.53,1.76,0);avatar.add(armPivot);
  avatarPart(armPivot,.32,.92,.34,shirt,0,-.43,0);avatarPart(armPivot,.31,.24,.33,skin,0,-.99,0);
  avatar.userData[side===-1?'leftArm':'rightArm']=armPivot;
@@ -194,12 +195,15 @@ avatar.userData.leftArm.rotation.x=-walkAmount*.72;avatar.userData.rightArm.rota
 const target=new THREE.Vector3(player.x,player.y+1.55,player.z);
 const dist=5.5-zoom;const firstPerson=dist<.42;const cp=Math.cos(pitch),sp=Math.sin(pitch);
 if(firstPerson){
- avatar.visible=false;
+ avatar.visible=true;
+ avatarHead.visible=false;
+ camera.up.set(0,1,0);
  camera.position.set(player.x,player.y+2.35,player.z);
  const viewDirection=new THREE.Vector3(-Math.sin(yaw)*cp,sp,-Math.cos(yaw)*cp);
  camera.lookAt(camera.position.clone().add(viewDirection));
 }else{
  avatar.visible=true;
+ avatarHead.visible=true;
  const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,sp*dist,Math.cos(yaw)*cp*dist);
  camera.position.copy(target).add(camOffset);camera.lookAt(target);
 }
