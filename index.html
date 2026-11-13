@@ -181,6 +181,45 @@ for(let i=0;i<5;i++){const x=45+i*5.5,z=-37-i*2.5,top=1.4+i*.9;obbyPlatform(x,z,
 for(let i=0;i<4;i++)obbyHazard(52+i*5.5,-40-i*2.5,2.3+i*.9,1.5,1.5);
 box(4,.25,4,blockYellow,72,7.1,-51);
 
+
+// Three extra themed biomes with their own landmarks and difficult routes.
+const biomeGrass=mat(0x6e9d62),desertSand=mat(0xd6b06b),iceMat=mat(0x9bd6e8),swampMat=mat(0x547f68);
+function biomePatch(x,z,color,w=54,d=54){const m=box(w,.16,d,color,x,-.39,z);return m;}
+biomePatch(-72,-5,desertSand,54,58);
+biomePatch(72,70,iceMat,54,54);
+biomePatch(-72,70,swampMat,54,54);
+// Desert: pyramid, cacti, ruins and a suspicious loose floor tile.
+const sandStone=mat(0xc69b59),sandDark=mat(0x8f693e),pyramid=new THREE.Group();
+for(let level=0;level<5;level++){const width=20-level*3.5;const tier=new THREE.Mesh(new THREE.BoxGeometry(width,2,width),level%2?sandDark:sandStone);tier.position.y=level*2+1;tier.castShadow=true;tier.receiveShadow=true;pyramid.add(tier);}
+pyramid.position.set(-72,0,-5);scene.add(pyramid);
+const pyramidTrap=box(4,.18,4,mat(0x5a4634),-72,10.08,-5);
+const trapMark=box(3.2,.05,3.2,mat(0xd8b66f),-72,10.2,-5);
+const pyramidOpening=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.1,8,16,1,true),sandDark);pyramidOpening.position.set(-72,6,-5);scene.add(pyramidOpening);
+for(let i=0;i<8;i++){const x=-95+(i%4)*14,z=-24+Math.floor(i/4)*38;const cactus=new THREE.Group();const stem=new THREE.Mesh(new THREE.CylinderGeometry(.45,.55,3,8),mat(0x39794b));stem.position.y=1.5;cactus.add(stem);for(const side of [-1,1]){const arm=new THREE.Mesh(new THREE.CylinderGeometry(.22,.25,1.3,8),mat(0x39794b));arm.position.set(side*.55,1.7,0);arm.rotation.z=side*.7;cactus.add(arm)}cactus.position.set(x,0,z);scene.add(cactus);}
+function hardRoute(points,color){for(const p of points)obbyPlatform(p[0],p[1],p[2],p[3]||3.2,p[4]||3.2,color);}
+hardRoute([[-93,-5,.7],[-89,-1,1.7],[-85,-6,2.8],[-81,-1,4],[-77,-6,5.2],[-73,-1,6.5],[-69,-6,7.8]],0xd9a74f);
+for(const p of [[-89,-1,1.7],[-81,-1,4],[-73,-1,6.5]])obbyHazard(p[0],p[1],p[2],1.35,1.35);
+// Snow biome: ice spires, slippery-looking stepping stones and a frozen cave.
+for(let i=0;i<11;i++){const x=52+(i%4)*12,z=48+Math.floor(i/4)*12;const ice=new THREE.Mesh(new THREE.ConeGeometry(2.1,5+Math.random()*4,6),mat(0xc7f0fa));ice.position.set(x,2.5,z);ice.castShadow=true;scene.add(ice);}
+const frozenCave= new THREE.Mesh(new THREE.TorusGeometry(5,.8,8,18),mat(0x5ba6c4));frozenCave.position.set(72,3,88);frozenCave.rotation.x=Math.PI/2;scene.add(frozenCave);
+hardRoute([[51,91,.8],[56,86,1.8],[61,91,3],[66,86,4.4],[71,91,5.8],[76,86,7.2],[81,91,8.8]],0x8bd0e8);
+for(const p of [[56,86,1.8],[66,86,4.4],[76,86,7.2]])obbyHazard(p[0],p[1],p[2],1.25,1.25);
+// Swamp biome: giant mushrooms, fallen logs and a narrow zig-zag route.
+for(let i=0;i<10;i++){const x=-92+(i%5)*10,z=52+Math.floor(i/5)*18;const stem=new THREE.Mesh(new THREE.CylinderGeometry(.45,.7,3,8),mat(0xd7c4a1));stem.position.set(x,1.5,z);scene.add(stem);const cap=new THREE.Mesh(new THREE.SphereGeometry(2.2,12,8),mat(i%2?0xc85d70:0xb44f9b));cap.scale.y=.55;cap.position.set(x,3.2,z);scene.add(cap);}
+hardRoute([[-96,92,.7],[-91,87,1.6],[-86,92,2.7],[-81,87,4],[-76,92,5.5],[-71,87,7],[-66,92,8.5]],0x69a77a);
+for(const p of [[-91,87,1.6],[-81,87,4],[-71,87,7]])obbyHazard(p[0],p[1],p[2],1.2,1.2);
+// A hidden underground chamber: fall through the pyramid's marked tile, then beat its precision obby.
+const underFloor=box(42,.5,42,mat(0x252b3d),-72,-14,-5);
+const caveWalls=mat(0x39465b);
+box(42,12,.7,caveWalls,-72,-8,-26);box(42,12,.7,caveWalls,-72,-8,16);box(.7,12,42,caveWalls,-93,-8,-5);box(.7,12,42,caveWalls,-51,-8,-5);
+const undergroundPlatforms=[];
+function underStep(x,z,y,w=2.7,d=2.7,color=0x8c70c7){const mesh=box(w,.45,d,mat(color),x,y-.225,z);undergroundPlatforms.push({x,z,top:y,w,d,mesh});}
+[[-88,-5,-11],[-83,-1,-9.5],[-78,-5,-8],[-73,-1,-6.5],[-68,-5,-5],[-63,-1,-3.5],[-58,-5,-2]].forEach((p,i)=>underStep(p[0],p[1],p[2],2.6,2.6,[0x8c70c7,0x4d9fba,0x66b98b][i%3]));
+for(const p of [[-83,-1,-9.5],[-73,-1,-6.5],[-63,-1,-3.5]])obbyHazard(p[0],p[1],p[2]+.15,1.15,1.15);
+const underExit=box(3,.25,3,mat(0x55e0b1),-57,-1.8,-5);
+let undergroundMode=false;
+const underCheckpoint=new THREE.Vector3(-88,-11,-5);
+
 function makeDog(name,color,accent,x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);const fur=mat(color),detail=mat(accent),dark=mat(0x29252a),nose=mat(0x18171a);
 const body=new THREE.Mesh(new THREE.SphereGeometry(.62,18,14),fur);body.scale.set(1.25,.78,.82);body.position.y=.75;body.castShadow=true;g.add(body);
 const head=new THREE.Mesh(new THREE.SphereGeometry(.43,18,14),fur);head.position.set(0,1.25,.57);head.castShadow=true;g.add(head);
@@ -221,6 +260,22 @@ dogDefs.push(
 ['Vault Pup',0x263647,0x65f0dc,81,-65,.85],['Cipher',0x344354,0x9667d8,87,-63,.82],
 ['Obby',0x4c9fbd,0xffd35c,70,-51,.85]);
 dogDefs.forEach(d=>makeDog(...d));
+const flatDogs=[];
+function makeDogPainting(x,y,z,rotation,color,name){
+ const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;const ctx=canvas.getContext('2d');
+ ctx.fillStyle='#342b35';ctx.fillRect(0,0,128,128);ctx.fillStyle='#d9c18c';ctx.fillRect(8,8,112,112);
+ ctx.fillStyle='#4a3b32';ctx.fillRect(17,17,94,94);
+ ctx.fillStyle=color;ctx.fillRect(38,49,54,34);ctx.fillRect(72,35,25,27);ctx.fillRect(75,27,8,16);ctx.fillRect(88,27,8,16);
+ ctx.fillRect(44,78,9,17);ctx.fillRect(77,78,9,17);ctx.fillStyle='#fff';ctx.fillRect(86,42,5,5);ctx.fillStyle='#171717';ctx.fillRect(89,44,3,3);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const frame=new THREE.Mesh(new THREE.BoxGeometry(2.1,2.1,.18),mat(0x8b603c));frame.position.set(x,y,z);frame.rotation.y=rotation;scene.add(frame);
+ const picture=new THREE.Mesh(new THREE.PlaneGeometry(1.85,1.85),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));picture.position.copy(frame.position);picture.rotation.y=rotation;picture.position.z+=rotation===0?.105:0;picture.position.x+=rotation!==0?.105:0;scene.add(picture);
+ flatDogs.push({name,position:new THREE.Vector3(x,y,z),found:false,frame,picture});
+}
+makeDogPainting(-72,4,-33,0,'#c69b59','Canvas Corgi');
+makeDogPainting(99,3,70,Math.PI/2,'#9bd6e8','Frost Sketch');
+makeDogPainting(-99,3,70,-Math.PI/2,'#547f68','Swamp Doodle');
+
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
 let sprintEnergy=100;let difficultyMode='hard';
 let deviceMode='computer';
@@ -252,11 +307,12 @@ for(const side of [-1,1]){
 }
 scene.add(avatar);
 const player=new THREE.Vector3(0,0,48);const horizontalVelocity=new THREE.Vector3();const keys={};const clock=new THREE.Clock();
-function updateProgress(){$('count').textContent=found.size+' / '+dogDefs.length;$('fill').style.width=(found.size/dogDefs.length*100)+'%';}
+function updateProgress(){$('count').textContent=found.size+' / '+(dogDefs.length+flatDogs.length);$('fill').style.width=(found.size/(dogDefs.length+flatDogs.length)*100)+'%';}
 function showToast(title,sub){$('toastTitle').textContent=title;$('toastText').textContent=sub;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
-function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of '+dogDefs.length+' discovered';}
+function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});flatDogs.forEach(f=>{const got=found.has(f.name);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'2D':'?')+'</div><b>'+(got?f.name:'Hidden painting dog')+'</b><span>'+(got?'Collected':'Inspect the paintings')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of '+(dogDefs.length+flatDogs.length)+' discovered';}
 function openCollection(){$('collection').style.display='block';renderCollection();document.exitPointerLock?.()}
-function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===dogDefs.length)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
+function collectFlatDog(flat){if(!flat||flat.found)return;flat.found=true;found.add(flat.name);flat.picture.visible=false;flat.frame.material=mat(0xffd56a);updateProgress();showToast('SECRET PAINTING DOG FOUND',flat.name+' was hiding in the picture!');renderCollection();}
+function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===dogDefs.length+flatDogs.length)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
 function start(){playing=true;$('deviceChoice').style.display='none';$('menu').style.display='none';$('settings').style.display='none';if(deviceMode==='computer')renderer.domElement.requestPointerLock?.()}
 $('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsBtn').onclick=()=>$('settings').style.display=$('settings').style.display==='block'?'none':'block';
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
