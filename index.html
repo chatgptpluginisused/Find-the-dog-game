@@ -122,7 +122,7 @@ for(const side of [-1,1]){
  avatar.userData[side===-1?'leftLeg':'rightLeg']=legPivot;
 }
 scene.add(avatar);
-const player=new THREE.Vector3(0,0,48);const keys={};const clock=new THREE.Clock();
+const player=new THREE.Vector3(0,0,48);const horizontalVelocity=new THREE.Vector3();const keys={};const clock=new THREE.Clock();
 function updateProgress(){$('count').textContent=found.size+' / 10';$('fill').style.width=(found.size/10*100)+'%';}
 function showToast(title,sub){$('toastTitle').textContent=title;$('toastText').textContent=sub;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
 function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of 10 discovered';}
@@ -164,15 +164,29 @@ function update(dt){if(!playing)return;
 const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));let move=new THREE.Vector3();
 if(keys.KeyW||keys.ArrowUp)move.add(forward);if(keys.KeyS||keys.ArrowDown)move.sub(forward);if(keys.KeyD||keys.ArrowRight)move.add(right);if(keys.KeyA||keys.ArrowLeft)move.sub(right);
 move.addScaledVector(forward,-stickVec.y);move.addScaledVector(right,stickVec.x);if(move.lengthSq()>0)move.normalize();
+// Accelerate smoothly, with less control while airborne and gentle ground friction.
+const speed=keys.ControlLeft?10:7;
+const targetVelocity=move.clone().multiplyScalar(speed);
+const acceleration=onGround?(move.lengthSq()>.001?30:24):9;
+horizontalVelocity.x=THREE.MathUtils.damp(horizontalVelocity.x,targetVelocity.x,acceleration,dt);
+horizontalVelocity.z=THREE.MathUtils.damp(horizontalVelocity.z,targetVelocity.z,acceleration,dt);
+player.addScaledVector(horizontalVelocity,dt);
+player.x=THREE.MathUtils.clamp(player.x,-73,73);player.z=THREE.MathUtils.clamp(player.z,-73,73);
+if(player.x===-73||player.x===73)horizontalVelocity.x=0;
+if(player.z===-73||player.z===73)horizontalVelocity.z=0;
+// Gravity and a stable landing on the park floor.
+const wasGrounded=onGround;
+velocityY-=24*dt;player.y+=velocityY*dt;
+if(player.y<=0){player.y=0;velocityY=0;onGround=true}else onGround=false;
+if(jumpHeld&&onGround)jump();
+const actualSpeed=Math.hypot(horizontalVelocity.x,horizontalVelocity.z);
 avatar.position.set(player.x,player.y,player.z);
 // In shift lock, keep the avatar facing the camera's forward direction (away from the camera).
 if(locked)avatar.rotation.y=yaw+Math.PI;
-else if(move.lengthSq()>.001)avatar.rotation.y=Math.atan2(move.x,move.z);
-const walkAmount=move.lengthSq()>.001?Math.sin(clock.elapsedTime*10)*.62:0;
+else if(actualSpeed>.12)avatar.rotation.y=Math.atan2(horizontalVelocity.x,horizontalVelocity.z);
+const walkAmount=onGround&&actualSpeed>.12?Math.sin(clock.elapsedTime*actualSpeed*1.8)*.62:0;
 avatar.userData.leftLeg.rotation.x=walkAmount;avatar.userData.rightLeg.rotation.x=-walkAmount;
 avatar.userData.leftArm.rotation.x=-walkAmount*.72;avatar.userData.rightArm.rotation.x=walkAmount*.72;
-const speed=keys.ControlLeft?10:7;player.addScaledVector(move,speed*dt);player.x=THREE.MathUtils.clamp(player.x,-73,73);player.z=THREE.MathUtils.clamp(player.z,-73,73);
-velocityY-=20*dt;player.y+=velocityY*dt;if(player.y<0){player.y=0;velocityY=0;onGround=true}if(jumpHeld&&onGround)jump()
 const target=new THREE.Vector3(player.x,player.y+1.55,player.z);
 const dist=5.5-zoom;const firstPerson=dist<.42;const cp=Math.cos(pitch),sp=Math.sin(pitch);
 if(firstPerson){
