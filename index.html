@@ -47,7 +47,7 @@ body.mobile-mode #bottom{display:none}
 <div id="game"></div>
 <div id="hud">
  <div id="brand" class="panel">FIND THE DOGS<small>EXPLORE • DISCOVER • COLLECT</small></div>
- <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div></div>
+ <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal" selected>Adventurer</option><option value="hard">Tracker</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
@@ -143,6 +143,25 @@ for(const side of [-1,1]){const leg=new THREE.Mesh(new THREE.CylinderGeometry(.1
 const tail=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.55,8),fur);tail.position.set(0,.95,-.68);tail.rotation.x=-1;g.add(tail);
 g.userData={name,found:false,baseY:0,phase:Math.random()*6};scene.add(g);dogs.push(g);return g}
 const dogs=[];
+const bones=[];
+let bonesFound=0;
+const boneMaterial=mat(0xffe5a1),boneGlow=mat(0xffc84d);
+function makeBone(x,z){
+ const g=new THREE.Group();
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.095,.095,.62,10),boneMaterial);
+ shaft.rotation.z=Math.PI/2;g.add(shaft);
+ for(const side of [-1,1])for(const offset of [-1,1]){
+  const end=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8),boneMaterial);
+  end.position.set(side*.34,offset*.11,0);g.add(end);
+ }
+ const halo=new THREE.Mesh(new THREE.TorusGeometry(.48,.025,6,24),boneGlow);
+ halo.rotation.x=Math.PI/2;g.add(halo);
+ g.position.set(x,.8,z);g.userData.phase=Math.random()*6;
+ scene.add(g);bones.push(g);
+}
+[[-28,-8],[42,-36],[-48,38],[5,-55],[55,5]].forEach(p=>makeBone(p[0],p[1]));
+function updateBoneCounter(){$('boneCount').textContent='GOLDEN BONES: '+bonesFound+' / 5';}
+
 const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
 dogDefs.forEach(d=>makeDog(...d));
@@ -294,12 +313,20 @@ if(firstPerson){
  const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,sp*dist,Math.cos(yaw)*cp*dist);
  camera.position.copy(target).add(camOffset);camera.lookAt(target);
 }
+for(const b of bones){
+ if(!b.visible)continue;
+ b.rotation.y+=dt*.9;b.position.y=.8+Math.sin(clock.elapsedTime*2+b.userData.phase)*.12;
+ if(Math.hypot(b.position.x-player.x,b.position.z-player.z)<1.25){
+  b.visible=false;bonesFound++;updateBoneCounter();
+  showToast('GOLDEN BONE FOUND',bonesFound===5?'You found every bonus bone!':'A bonus hidden around the park.');
+ }
+}
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
 if(nearest<1.45){collect(nearDog)}else if(nearest<4.2){$('hint').textContent='Walk into '+nearDog.userData.name+' to collect';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
-updateProgress();$('obbyStatus').style.display='block';
+updateProgress();updateBoneCounter();$('obbyStatus').style.display='block';
 </script>
 </body>
 </html>
