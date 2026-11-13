@@ -119,7 +119,7 @@ const obbySteps=[
 obbySteps.forEach(p=>obbyPlatform(p[0],p[1],p[2],p[3],p[4],p[5]));
 // The wide raised pads are joined by clear, deliberate jumps; no decorative bridge floats below them.
 courseHoop(10,41,2.8);courseHoop(31,24,5.2,0x74c9e6);
-obbyHazard(23,32,1.35,1.8,1.8);obbyHazard(33,22,2.05,1.8,1.8);
+obbyHazard(18,37,2.4,1.8,1.8);obbyHazard(28,27,4.0,1.8,1.8);
 const launchPad=box(2.5,.2,2.5,mat(0x36d5d0),33,4.12,22);
 const launchRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.08,8,28),mat(0x9ff8ec));launchRing.rotation.x=Math.PI/2;launchRing.position.set(33,4.26,22);scene.add(launchRing);
 function obbyMarker(x,y,z,color){
