@@ -194,11 +194,13 @@ avatar.userData.leftArm.rotation.x=-walkAmount*.72;avatar.userData.rightArm.rota
 const target=new THREE.Vector3(player.x,player.y+1.55,player.z);
 const dist=5.5-zoom;const firstPerson=dist<.42;const cp=Math.cos(pitch),sp=Math.sin(pitch);
 if(firstPerson){
+ avatar.visible=false;
  camera.position.set(player.x,player.y+2.35,player.z);
  const viewDirection=new THREE.Vector3(-Math.sin(yaw)*cp,sp,-Math.cos(yaw)*cp);
  camera.lookAt(camera.position.clone().add(viewDirection));
 }else{
- const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,1.4+sp*dist,Math.cos(yaw)*cp*dist);
+ avatar.visible=true;
+ const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,sp*dist,Math.cos(yaw)*cp*dist);
  camera.position.copy(target).add(camOffset);camera.lookAt(target);
 }
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
