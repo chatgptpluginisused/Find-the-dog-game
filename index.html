@@ -165,7 +165,9 @@ const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new
 if(keys.KeyW||keys.ArrowUp)move.add(forward);if(keys.KeyS||keys.ArrowDown)move.sub(forward);if(keys.KeyD||keys.ArrowRight)move.add(right);if(keys.KeyA||keys.ArrowLeft)move.sub(right);
 move.addScaledVector(forward,-stickVec.y);move.addScaledVector(right,stickVec.x);if(move.lengthSq()>0)move.normalize();
 avatar.position.set(player.x,player.y,player.z);
-if(move.lengthSq()>.001)avatar.rotation.y=Math.atan2(-move.x,-move.z);
+// In shift lock, keep the avatar facing the camera's forward direction (away from the camera).
+if(locked)avatar.rotation.y=yaw+Math.PI;
+else if(move.lengthSq()>.001)avatar.rotation.y=Math.atan2(move.x,move.z);
 const walkAmount=move.lengthSq()>.001?Math.sin(clock.elapsedTime*10)*.62:0;
 avatar.userData.leftLeg.rotation.x=walkAmount;avatar.userData.rightLeg.rotation.x=-walkAmount;
 avatar.userData.leftArm.rotation.x=-walkAmount*.72;avatar.userData.rightArm.rotation.x=walkAmount*.72;
