@@ -19,7 +19,7 @@
 button,select,input{font:inherit}button{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;color:#14202b;background:linear-gradient(135deg,#ffe28a,#ffbd54);box-shadow:0 5px 18px #0003}button.secondary{background:#ffffff18;color:white;border:1px solid var(--line);box-shadow:none}button:active{transform:scale(.97)}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 #settings{display:none;text-align:left;margin-top:20px;padding:16px;background:#ffffff0c;border:1px solid var(--line);border-radius:14px}#settings label{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:10px 0;font-size:13px}#settings input{width:130px}#settings select{background:#182631;color:#fff;border:1px solid #ffffff33;border-radius:8px;padding:7px}
 #collection{position:fixed;z-index:6;inset:0;background:#07131deF;display:none;padding:22px;overflow:auto}#collection .wrap{max-width:800px;margin:0 auto}#collection h2{font-size:28px;margin:6px 0}#dogs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:18px 0}.dog{border:1px solid var(--line);background:#ffffff0b;border-radius:14px;padding:14px;text-align:center;min-height:100px}.dog .face{font-size:28px;margin-bottom:6px}.dog.locked{opacity:.4;filter:grayscale(1)}.dog b{display:block;font-size:12px}.dog span{font-size:10px;color:#b7c5d0}
-#mobile{display:none;position:fixed;inset:0;pointer-events:none;z-index:3}.touchzone{position:absolute;right:0;top:0;width:60%;height:78%;pointer-events:auto;touch-action:none}.stick{position:fixed;left:0;top:0;width:132px;height:132px;display:none;transform:translate(-50%,-50%);border-radius:50%;background:rgba(18,25,35,.34);border:2px solid rgba(255,255,255,.34);box-shadow:inset 0 0 0 8px rgba(255,255,255,.045),0 5px 18px #0003;pointer-events:auto;touch-action:none}.nub{position:absolute;left:39px;top:39px;width:52px;height:52px;border-radius:50%;background:linear-gradient(145deg,#f8fbff,#aebdca);border:2px solid #fff;box-shadow:0 3px 9px #0006;pointer-events:none}.mobileBtns{position:absolute;right:12px;top:78px;bottom:auto;display:grid;grid-template-columns:repeat(3,60px);gap:7px;pointer-events:auto}.mobileBtns button{width:60px;height:48px;padding:5px;font-size:10px;border-radius:18px;background:rgba(35,48,64,.82);color:#fff;border:1.5px solid rgba(255,255,255,.55);box-shadow:0 3px 10px #0005}.mobileBtns .jump{grid-column:auto;justify-self:auto;width:60px;height:60px;border-radius:50%;font-size:13px;background:rgba(39,111,185,.9)}
+#mobile{display:none;position:fixed;inset:0;pointer-events:none;z-index:3}.touchzone{position:absolute;right:0;top:0;width:60%;height:78%;pointer-events:auto;touch-action:none}.stick{position:fixed;left:0;top:0;width:132px;height:132px;display:none;transform:translate(-50%,-50%);border-radius:50%;background:rgba(18,25,35,.34);border:2px solid rgba(255,255,255,.34);box-shadow:inset 0 0 0 8px rgba(255,255,255,.045),0 5px 18px #0003;pointer-events:auto;touch-action:none}.nub{position:absolute;left:39px;top:39px;width:52px;height:52px;border-radius:50%;background:linear-gradient(145deg,#f8fbff,#aebdca);border:2px solid #fff;box-shadow:0 3px 9px #0006;pointer-events:none}.mobileBtns{position:absolute;right:12px;top:78px;bottom:auto;display:grid;grid-template-columns:repeat(3,60px);gap:7px;pointer-events:auto}.mobileBtns button{width:60px;height:48px;padding:5px;font-size:10px;border-radius:18px;background:rgba(35,48,64,.82);color:#fff;border:1.5px solid rgba(255,255,255,.55);box-shadow:0 3px 10px #0005}.mobileBtns .jump{grid-column:auto;justify-self:auto;width:66px;height:66px;border-radius:50%;font-size:12px;font-weight:900;letter-spacing:.04em;background:linear-gradient(145deg,#42a5f5,#1769aa);border:3px solid rgba(255,255,255,.9);box-shadow:0 4px 0 #104b7a,0 7px 14px #0006;touch-action:none;user-select:none;-webkit-user-select:none}.mobileBtns .jump:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #104b7a,0 3px 8px #0006}
 #toast{position:fixed;z-index:8;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;transition:.25s;background:#0b1722ed;border:1px solid var(--line);border-radius:14px;padding:13px 18px;text-align:center;pointer-events:none}#toast.show{opacity:1;transform:translate(-50%,0)}#toast strong{display:block;color:var(--gold);font-size:16px}#toast span{font-size:12px;color:#d5e0e8}
 
 body.mobile-mode #brand{top:10px;left:10px;font-size:14px;padding:9px 12px}
@@ -91,7 +91,7 @@ const dogs=[];
 const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
 dogDefs.forEach(d=>makeDog(...d));
-let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false;
+let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false;
 let deviceMode='computer';
 $('chooseComputer').onclick=()=>{deviceMode='computer';document.body.classList.remove('mobile-mode');$('deviceChoice').style.display='none'};
 $('chooseMobile').onclick=()=>{deviceMode='mobile';document.body.classList.add('mobile-mode');$('deviceChoice').style.display='none'};
@@ -112,9 +112,14 @@ document.addEventListener('keyup',e=>keys[e.code]=false);
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===renderer.domElement){yaw-=e.movementX*.002*sensitivity;pitch-=e.movementY*.002*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)}});
 renderer.domElement.addEventListener('click',()=>{if(playing&&deviceMode==='computer'&&document.pointerLockElement!==renderer.domElement)renderer.domElement.requestPointerLock?.()});
 renderer.domElement.addEventListener('wheel',e=>{zoom=THREE.MathUtils.clamp(zoom+Math.sign(e.deltaY)*.8,0,9)},{passive:true});
-function jump(){if(onGround){velocityY=8.5;onGround=false}}
-document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();jump()}});
-$('jumpBtn').onclick=jump;$('zoomIn').onclick=()=>zoom=THREE.MathUtils.clamp(zoom+1,0,9);$('zoomOut').onclick=()=>zoom=THREE.MathUtils.clamp(zoom-1,0,9);
+function jump(){if(onGround){velocityY=9.2;onGround=false}}
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();jumpHeld=true;jump()}});
+document.addEventListener('keyup',e=>{if(e.code==='Space')jumpHeld=false});
+const jumpButton=$('jumpBtn');
+jumpButton.addEventListener('pointerdown',e=>{e.preventDefault();jumpHeld=true;jump();jumpButton.setPointerCapture(e.pointerId)});
+function releaseJump(e){jumpHeld=false}
+jumpButton.addEventListener('pointerup',releaseJump);jumpButton.addEventListener('pointercancel',releaseJump);jumpButton.addEventListener('lostpointercapture',releaseJump);
+$('zoomIn').onclick=()=>zoom=THREE.MathUtils.clamp(zoom+1,0,9);$('zoomOut').onclick=()=>zoom=THREE.MathUtils.clamp(zoom-1,0,9);
 $('shiftBtn').onclick=()=>{locked=!locked;$('shiftBtn').style.background=locked?'#ffe28a':'#ffffff18';$('shiftBtn').style.color=locked?'#14202b':'white'};
 let stickVec={x:0,y:0},stickActive=false,stickId=null,stickOrigin={x:0,y:0};const stick=$('stick'),nub=$('nub'),movezone=$('movezone');
 movezone.style.cssText='position:absolute;left:0;top:0;width:50%;height:100%;pointer-events:auto;touch-action:none';
@@ -134,7 +139,7 @@ const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new
 if(keys.KeyW||keys.ArrowUp)move.add(forward);if(keys.KeyS||keys.ArrowDown)move.sub(forward);if(keys.KeyD||keys.ArrowRight)move.add(right);if(keys.KeyA||keys.ArrowLeft)move.sub(right);
 move.addScaledVector(forward,-stickVec.y);move.addScaledVector(right,stickVec.x);if(move.lengthSq()>0)move.normalize();
 const speed=keys.ControlLeft?10:7;player.addScaledVector(move,speed*dt);player.x=THREE.MathUtils.clamp(player.x,-73,73);player.z=THREE.MathUtils.clamp(player.z,-73,73);
-velocityY-=20*dt;player.y+=velocityY*dt;if(player.y<0){player.y=0;velocityY=0;onGround=true}
+velocityY-=20*dt;player.y+=velocityY*dt;if(player.y<0){player.y=0;velocityY=0;onGround=true}if(jumpHeld&&onGround)jump()
 const target=new THREE.Vector3(player.x,player.y+1.55,player.z);const dist=locked?4.5:5.5+zoom;const cp=Math.cos(pitch),sp=Math.sin(pitch);
 const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,1.4+sp*dist,Math.cos(yaw)*cp*dist);camera.position.copy(target).add(camOffset);camera.lookAt(target);
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
