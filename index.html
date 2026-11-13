@@ -59,7 +59,7 @@ body.mobile-mode #bottom{display:none}
 </div>
 <div id="toast"><strong id="toastTitle">Dog found!</strong><span id="toastText"></span></div>
 <div id="deviceChoice"><div class="card panel"><div class="eyebrow">WELCOME TO THE GREAT DOG HUNT</div><h2>How are you playing?</h2><p>Choose your device to set up the best controls and screen layout.</p><div class="actions"><button id="chooseComputer">COMPUTER</button><button id="chooseMobile" class="secondary">PHONE / TABLET</button></div></div></div>
-<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore the dog park, track down ten sneaky dogs and fill your collection. Some are hiding in plain sight. Others are tucked away where you least expect.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
+<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore two huge areas, find 25 camouflaged dogs, solve hidden switch puzzles, unlock the secret vault and beat difficult parkour challenges.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
 <div id="collection"><div class="wrap"><div class="eyebrow">YOUR FIELD GUIDE</div><h2>Dog collection</h2><p id="collectionSub" style="color:#bac8d2"></p><div id="dogs"></div><button id="closeCollection" class="secondary">BACK TO GAME</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -164,6 +164,8 @@ const gateGlow=new THREE.Mesh(new THREE.TorusGeometry(1.45,.08,10,32),mat(0xffe7
 // A second, block-built Roblox-style region: Blockbyte District.
 const blockConcrete=mat(0x8795a4),blockDark=mat(0x344354),blockBlue=mat(0x368ed0),blockNeon=mat(0x65f0dc),blockYellow=mat(0xffd35c),blockPurple=mat(0x9667d8);
 box(58,.18,58,mat(0x596b7b),69,.02,-62);
+const districtRoad=box(6,.12,70,mats.path,46,.12,-49);districtRoad.rotation.y=.85;
+for(let i=0;i<9;i++){const stud=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.12,10),blockYellow);stud.position.set(23+i*5.7,.22,-29-i*5.1);scene.add(stud);}
 for(let ix=0;ix<8;ix++)for(let iz=0;iz<8;iz++){box(6.8,.16,6.8,(ix+iz)%2?mat(0x647b8d):mat(0x71899b),43+ix*7.4,.16,-91+iz*7.4);}
 function blockBuilding(x,z,w,h,d,color){box(w,h,d,mat(color),x,h/2,z);for(let xx=-1;xx<=1;xx++)for(let zz=-1;zz<=1;zz++){if(Math.abs(xx)+Math.abs(zz)===0)continue;box(.22,.22,.22,blockNeon,x+xx*(w/2-.5),h+.12,z+zz*(d/2-.5));}box(w*.55,.35,.18,blockYellow,x,h*.68,z+d/2+.11);}
 blockBuilding(49,-48,12,9,10,0x3e7297);blockBuilding(87,-49,13,13,11,0x73569a);blockBuilding(48,-78,11,7,12,0x8b704b);blockBuilding(88,-78,14,10,12,0x4d806e);
