@@ -378,12 +378,18 @@ const previousY=player.y;
 velocityY-=24*dt;player.y+=velocityY*dt;
 onGround=false;
 if(velocityY<=0){
- for(const p of obbyPlatforms){
+ const allPlatforms=undergroundMode?undergroundPlatforms:obbyPlatforms;
+ for(const p of allPlatforms){
   const within=Math.abs(player.x-p.x)<p.w/2-.25&&Math.abs(player.z-p.z)<p.d/2-.25;
   if(within&&previousY>=p.top-.18&&player.y<=p.top){player.y=p.top;velocityY=0;onGround=true;break}
  }
 }
-if(!onGround&&player.y<=0){player.y=0;velocityY=0;onGround=true}
+if(!undergroundMode&&!onGround&&player.y<=0){player.y=0;velocityY=0;onGround=true}
+if(undergroundMode&&!onGround&&player.y<=-14){player.y=-14;velocityY=0;onGround=true}
+if(!undergroundMode&&Math.hypot(player.x+72,player.z+5)<1.55&&player.y<8.2){undergroundMode=true;player.set(-88,-10.5,-5);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.copy(underCheckpoint);onGround=true;showToast('PYRAMID TRAP!','You fell through the false floor. Beat the underground obby!')}
+if(undergroundMode&&Math.hypot(player.x+57,player.z+5)<2.1&&player.y<0){undergroundMode=false;player.set(-72,0,-35);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.set(-72,0,-35);showToast('CAVE ESCAPED','You conquered the pyramid challenge!')}
+if(undergroundMode&&player.y<-20){player.copy(underCheckpoint);velocityY=0;horizontalVelocity.set(0,0);showToast('FELL!','Back to the underground checkpoint.')}
+
 if(jumpHeld&&onGround)jump();
 launchCooldown=Math.max(0,launchCooldown-dt);
 for(const h of obbyHazards){
@@ -429,7 +435,7 @@ for(let i=0;i<secretSwitches.length;i++){const s=secretSwitches[i];if(!s.found&&
 if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&player.y<1.5){player.set(84,0,-65);velocityY=0;horizontalVelocity.set(0,0);showToast('SECRET ROOM','You found the hidden vault.');}
 for(let i=0;i<secretSwitches.length;i++){const s=secretSwitches[i];if(!s.found&&Math.hypot(player.x-s.group.position.x,player.z-s.group.position.z)<1.35){s.found=true;s.group.children[1].material=blockYellow;s.group.scale.setScalar(1.25);const n=secretSwitches.filter(v=>v.found).length;$('secretCount').textContent='SECRET SWITCHES: '+n+' / 3';showToast('HIDDEN SWITCH FOUND',n===3?'The vault door has unlocked!':'Find the other hidden switches.');if(n===3){vaultDoor.position.y=7;showToast('SECRET VAULT OPENED','A hidden room has been revealed.');}}}
 if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&player.y<1.5){player.set(84,0,-65);velocityY=0;horizontalVelocity.set(0,0);showToast('SECRET ROOM','You found the hidden vault.');}
-$('areaStatus').textContent=player.x>38&&player.z< -30?'BLOCKBYTE DISTRICT':'DOG PARK';
+$('areaStatus').textContent=undergroundMode?'PYRAMID UNDERGROUND':player.x>38&&player.z< -30?'BLOCKBYTE DISTRICT':player.x< -45&&player.z<25?'DESERT RUINS':player.x>45&&player.z>40?'FROST PEAK':player.x< -45&&player.z>40?'MUSHROOM SWAMP':'DOG PARK';
 for(const b of bones){
  if(!b.visible)continue;
  b.rotation.y+=dt*.9;b.position.y=.8+Math.sin(clock.elapsedTime*2+b.userData.phase)*.12;
@@ -439,6 +445,7 @@ for(const b of bones){
  }
 }
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
+for(const f of flatDogs){if(!f.found&&Math.hypot(player.x-f.position.x,player.z-f.position.z)<2.2&&Math.abs(player.y-f.position.y)<3)collectFlatDog(f)}
 const collectRange=difficultyMode==='hard'?1.0:difficultyMode==='normal'?1.45:1.9;const clueRange=difficultyMode==='hard'?2.3:difficultyMode==='normal'?4.2:7.0;if(nearest<collectRange){collect(nearDog)}else if(nearest<clueRange){$('hint').textContent=difficultyMode==='hard'?'You hear something nearby...':'Walk into '+nearDog.userData.name+' to collect';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
