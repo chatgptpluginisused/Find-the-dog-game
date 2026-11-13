@@ -113,15 +113,15 @@ function courseHoop(x,z,y,color=0x66d5c2){
  for(const side of [-1,1])box(.16,y,.16,courseWood,x+side*.95,y/2,z);
 }
 const obbySteps=[
- [6,45,.35,7,6,0x6eaa79],[12,41,.65,7,6,0x75b6a0],[18,37,1,7,6,0x5e9fbd],
- [23,32,1.35,7,6,0x6b9dbd],[28,27,1.7,7,6,0x75b6a0],[33,22,2.05,7,6,0x5e9fbd],[38,17,2.4,8,7,0xd5a64c]
+ [6,45,.8,7,6,0x6eaa79],[12,41,1.6,7,6,0x75b6a0],[18,37,2.4,7,6,0x5e9fbd],
+ [23,32,3.2,7,6,0x6b9dbd],[28,27,4.0,7,6,0x75b6a0],[33,22,4.0,7,6,0x5e9fbd],[38,17,4.8,8,7,0xd5a64c]
 ];
 obbySteps.forEach(p=>obbyPlatform(p[0],p[1],p[2],p[3],p[4],p[5]));
-courseBridge(15,39,6,.7);courseBridge(25.5,29.5,6,.7);
-courseHoop(10,41,2);courseHoop(31,24,2.3,0x74c9e6);
+// The wide raised pads are joined by clear, deliberate jumps; no decorative bridge floats below them.
+courseHoop(10,41,2.8);courseHoop(31,24,5.2,0x74c9e6);
 obbyHazard(23,32,1.35,1.8,1.8);obbyHazard(33,22,2.05,1.8,1.8);
-const launchPad=box(2.5,.2,2.5,mat(0x36d5d0),33,2.18,22);
-const launchRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.08,8,28),mat(0x9ff8ec));launchRing.rotation.x=Math.PI/2;launchRing.position.set(33,2.32,22);scene.add(launchRing);
+const launchPad=box(2.5,.2,2.5,mat(0x36d5d0),33,4.12,22);
+const launchRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.08,8,28),mat(0x9ff8ec));launchRing.rotation.x=Math.PI/2;launchRing.position.set(33,4.26,22);scene.add(launchRing);
 function obbyMarker(x,y,z,color){
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,2.2,8),mat(0xe8edf2));pole.position.set(x,y+1.1,z);scene.add(pole);
  const flag=new THREE.Mesh(new THREE.BoxGeometry(1,.5,.08),mat(color));flag.position.set(x+.52,y+1.8,z);scene.add(flag);
