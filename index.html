@@ -51,7 +51,7 @@ body.mobile-mode #bottom{display:none}
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal" selected>Adventurer</option><option value="hard">Tracker</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
- <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · Wheel zoom · M collection</div>
+ <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · M collection</div>
 </div>
 <div id="mobile">
  <div class="touchzone" id="lookzone"></div><div id="movezone"></div><div class="stick" id="stick"><div class="nub" id="nub"></div></div>
@@ -59,7 +59,7 @@ body.mobile-mode #bottom{display:none}
 </div>
 <div id="toast"><strong id="toastTitle">Dog found!</strong><span id="toastText"></span></div>
 <div id="deviceChoice"><div class="card panel"><div class="eyebrow">WELCOME TO THE GREAT DOG HUNT</div><h2>How are you playing?</h2><p>Choose your device to set up the best controls and screen layout.</p><div class="actions"><button id="chooseComputer">COMPUTER</button><button id="chooseMobile" class="secondary">PHONE / TABLET</button></div></div></div>
-<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore two beautiful places, track down ten sneaky dogs and fill your collection. Some are hiding in plain sight. Others are tucked away where you least expect.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
+<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore the dog park, track down ten sneaky dogs and fill your collection. Some are hiding in plain sight. Others are tucked away where you least expect.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
 <div id="collection"><div class="wrap"><div class="eyebrow">YOUR FIELD GUIDE</div><h2>Dog collection</h2><p id="collectionSub" style="color:#bac8d2"></p><div id="dogs"></div><button id="closeCollection" class="secondary">BACK TO GAME</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -260,14 +260,14 @@ for(const h of obbyHazards){
   player.copy(activeCheckpoint);velocityY=0;horizontalVelocity.set(0,0);onGround=true;showToast('OOPS! TRY AGAIN','You returned to your last checkpoint.');break;
  }
 }
-if(Math.hypot(player.x-23,player.z-32)<2.2&&player.y>=2.0&&player.y<3.8&&activeCheckpoint.x!==23){
- activeCheckpoint.set(23,2.4,32);showToast('CHECKPOINT REACHED','Your progress is saved for this obby run.');
+if(Math.hypot(player.x-23,player.z-32)<2.5&&player.y>=1.25&&player.y<2.1&&activeCheckpoint.x!==23){
+ activeCheckpoint.set(23,1.35,32);showToast('CHECKPOINT REACHED','Your progress is saved for this obby run.');
 }
-if(Math.hypot(player.x-38,player.z-17)<2.1&&player.y>4.2&&!obbyCompleted){
- obbyCompleted=true;activeCheckpoint.set(38,4.8,17);showToast('OBBY COMPLETE!','You made it through the dog parkour trail.');
+if(Math.hypot(player.x-38,player.z-17)<2.8&&player.y>2.25&&!obbyCompleted){
+ obbyCompleted=true;activeCheckpoint.set(38,2.4,17);showToast('OBBY COMPLETE!','You made it through the dog parkour trail.');
  $('obbyStatus').textContent='OBBY COMPLETE'; 
 }
-if(launchCooldown===0&&Math.hypot(player.x-33,player.z-22)<1.5&&Math.abs(player.y-4.0)<1.2){
+if(launchCooldown===0&&Math.hypot(player.x-33,player.z-22)<1.8&&Math.abs(player.y-2.05)<.8){
  velocityY=14;onGround=false;launchCooldown=1.2;showToast('DOG BOOST!','The launch pad sent you flying.');
 }
 
