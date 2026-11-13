@@ -87,6 +87,33 @@ for(let i=0;i<24;i++){const x=(Math.random()-.5)*65,z=(Math.random()-.5)*65;if(M
 for(let i=0;i<14;i++){const x=(Math.random()-.5)*90,z=(Math.random()-.5)*90;sphere(.7,mats.stone,x,.1,z,1.4,.7,1)}
 // Decorative sign
 box(2.6,1.5,.18,mats.wood,0,1.2,32);const signTop=box(2.9,.15,.3,mat(0x573b2b),0,2,32);
+// More park landmarks: cosy dog cabins, a picnic shelter and warm trail lights.
+function dogCabin(x,z,wallColor,roofColor){
+ const walls=mat(wallColor),roof=mat(roofColor),door=mat(0x292a30);
+ box(3.2,1.9,2.7,walls,x,1.0,z);
+ const leftRoof=box(1.85,.22,3.05,roof,x-.78,2.08,z);leftRoof.rotation.z=-.48;
+ const rightRoof=box(1.85,.22,3.05,roof,x+.78,2.08,z);rightRoof.rotation.z=.48;
+ box(.9,1.05,.08,door,x,.58,z+1.37);
+ box(1.1,.12,.12,courseGold,x,1.32,z+1.43);
+ const plaque=box(1.15,.38,.1,courseWood,x,1.65,z+1.42);
+ box(.14,.14,.08,courseGold,x,1.65,z+1.49);
+}
+dogCabin(-53,-39,0xc98e62,0x754634);
+dogCabin(52,-42,0x9db9a0,0x4a6757);
+dogCabin(-54,48,0xd5c08d,0x8a6046);
+function trailLamp(x,z){
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.11,3,8),courseWood);pole.position.set(x,1.5,z);pole.castShadow=true;scene.add(pole);
+ const cap=new THREE.Mesh(new THREE.BoxGeometry(.62,.18,.62),courseGold);cap.position.set(x,3.08,z);scene.add(cap);
+ const glow=new THREE.Mesh(new THREE.SphereGeometry(.2,12,10),new THREE.MeshStandardMaterial({color:0xffe5a1,emissive:0xffbd58,emissiveIntensity:1.1}));glow.position.set(x,2.82,z);scene.add(glow);
+}
+[[-5,18],[5,0],[-5,-18],[5,-36],[24,-12],[42,2]].forEach(p=>trailLamp(p[0],p[1]));
+// A small picnic shelter gives the central path a recognisable landmark.
+const shelter= new THREE.Group();
+const shelterRoof=new THREE.Mesh(new THREE.ConeGeometry(3.8,1.25,4),mat(0x9a6845));shelterRoof.position.y=3.15;shelterRoof.rotation.y=Math.PI/4;shelter.add(shelterRoof);
+for(const sx of [-2.3,2.3])for(const sz of [-2.3,2.3]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,3,8),courseWood);post.position.set(sx,1.5,sz);shelter.add(post);}
+const shelterFloor=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,.18,8),mats.path);shelterFloor.position.y=.12;shelter.add(shelterFloor);
+shelter.position.set(-2,0,-42);scene.add(shelter);
+
 // Rebuilt dog adventure course: connected stepping stones, timber bridges, hoops and checkpoints.
 const obbyPlatforms=[],obbyHazards=[];
 let activeCheckpoint=new THREE.Vector3(0,0,48),obbyCompleted=false,launchCooldown=0;
