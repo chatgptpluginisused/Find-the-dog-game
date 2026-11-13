@@ -157,7 +157,7 @@ movezone.addEventListener('pointerup',endStick);movezone.addEventListener('point
 const look=$('lookzone');const lookPointers=new Map();let pinchStart=0,pinchZoom=0;
 function pointerDistance(){const p=[...lookPointers.values()];return p.length>=2?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}
 look.addEventListener('pointerdown',e=>{look.setPointerCapture(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size===2){pinchStart=pointerDistance();pinchZoom=zoom}});
-look.addEventListener('pointermove',e=>{if(!lookPointers.has(e.pointerId))return;const previous=lookPointers.get(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size>=2){const distance=pointerDistance();if(pinchStart>0)zoom=THREE.MathUtils.clamp(pinchZoom+(pinchStart-distance)*.025,0,9);return}const dx=e.clientX-previous.x,dy=e.clientY-previous.y;yaw-=dx*.006*sensitivity;pitch-=dy*.006*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)});
+look.addEventListener('pointermove',e=>{if(!lookPointers.has(e.pointerId))return;const previous=lookPointers.get(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size>=2){const distance=pointerDistance();if(pinchStart>0)zoom=THREE.MathUtils.clamp(pinchZoom+(pinchStart-distance)*.025,0,5.5);return}const dx=e.clientX-previous.x,dy=e.clientY-previous.y;yaw-=dx*.006*sensitivity;pitch-=dy*.006*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)});
 function endLook(e){lookPointers.delete(e.pointerId);if(lookPointers.size<2)pinchStart=0}
 look.addEventListener('pointerup',endLook);look.addEventListener('pointercancel',endLook);
 function update(dt){if(!playing)return;
@@ -173,8 +173,16 @@ avatar.userData.leftLeg.rotation.x=walkAmount;avatar.userData.rightLeg.rotation.
 avatar.userData.leftArm.rotation.x=-walkAmount*.72;avatar.userData.rightArm.rotation.x=walkAmount*.72;
 const speed=keys.ControlLeft?10:7;player.addScaledVector(move,speed*dt);player.x=THREE.MathUtils.clamp(player.x,-73,73);player.z=THREE.MathUtils.clamp(player.z,-73,73);
 velocityY-=20*dt;player.y+=velocityY*dt;if(player.y<0){player.y=0;velocityY=0;onGround=true}if(jumpHeld&&onGround)jump()
-const target=new THREE.Vector3(player.x,player.y+1.55,player.z);const dist=locked?4.5:5.5+zoom;const cp=Math.cos(pitch),sp=Math.sin(pitch);
-const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,1.4+sp*dist,Math.cos(yaw)*cp*dist);camera.position.copy(target).add(camOffset);camera.lookAt(target);
+const target=new THREE.Vector3(player.x,player.y+1.55,player.z);
+const dist=5.5-zoom;const firstPerson=dist<.42;const cp=Math.cos(pitch),sp=Math.sin(pitch);
+if(firstPerson){
+ camera.position.set(player.x,player.y+2.35,player.z);
+ const viewDirection=new THREE.Vector3(-Math.sin(yaw)*cp,sp,-Math.cos(yaw)*cp);
+ camera.lookAt(camera.position.clone().add(viewDirection));
+}else{
+ const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,1.4+sp*dist,Math.cos(yaw)*cp*dist);
+ camera.position.copy(target).add(camOffset);camera.lookAt(target);
+}
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
 if(nearest<1.45){collect(nearDog)}else if(nearest<4.2){$('hint').textContent='Walk into '+nearDog.userData.name+' to collect';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
 }
