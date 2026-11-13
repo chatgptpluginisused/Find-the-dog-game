@@ -47,7 +47,7 @@ body.mobile-mode #bottom{display:none}
 </div>
 <div id="mobile">
  <div class="touchzone" id="lookzone"></div><div id="movezone"></div><div class="stick" id="stick"><div class="nub" id="nub"></div></div>
- <div class="mobileBtns"><button id="zoomIn" class="secondary">ZOOM +</button><button id="zoomOut" class="secondary">ZOOM −</button><button id="shiftBtn" class="secondary">SHIFT LOCK</button><button id="collectionBtn" class="secondary">DOGS</button><button id="jumpBtn" class="jump">JUMP</button></div>
+ <div class="mobileBtns"><button id="shiftBtn" class="secondary">SHIFT LOCK</button><button id="collectionBtn" class="secondary">DOGS</button><button id="jumpBtn" class="jump">JUMP</button></div>
 </div>
 <div id="toast"><strong id="toastTitle">Dog found!</strong><span id="toastText"></span></div>
 <div id="deviceChoice"><div class="card panel"><div class="eyebrow">WELCOME TO THE GREAT DOG HUNT</div><h2>How are you playing?</h2><p>Choose your device to set up the best controls and screen layout.</p><div class="actions"><button id="chooseComputer">COMPUTER</button><button id="chooseMobile" class="secondary">PHONE / TABLET</button></div></div></div>
@@ -134,7 +134,7 @@ document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyM')ope
 document.addEventListener('keyup',e=>keys[e.code]=false);
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===renderer.domElement){yaw-=e.movementX*.002*sensitivity;pitch-=e.movementY*.002*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)}});
 renderer.domElement.addEventListener('click',()=>{if(playing&&deviceMode==='computer'&&document.pointerLockElement!==renderer.domElement)renderer.domElement.requestPointerLock?.()});
-renderer.domElement.addEventListener('wheel',e=>{zoom=THREE.MathUtils.clamp(zoom+Math.sign(e.deltaY)*.8,0,9)},{passive:true});
+
 function jump(){if(onGround){velocityY=9.2;onGround=false}}
 document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();jumpHeld=true;jump()}});
 document.addEventListener('keyup',e=>{if(e.code==='Space')jumpHeld=false});
@@ -142,7 +142,7 @@ const jumpButton=$('jumpBtn');
 jumpButton.addEventListener('pointerdown',e=>{e.preventDefault();jumpHeld=true;jump();jumpButton.setPointerCapture(e.pointerId)});
 function releaseJump(e){jumpHeld=false}
 jumpButton.addEventListener('pointerup',releaseJump);jumpButton.addEventListener('pointercancel',releaseJump);jumpButton.addEventListener('lostpointercapture',releaseJump);
-$('zoomIn').onclick=()=>zoom=THREE.MathUtils.clamp(zoom+1,0,9);$('zoomOut').onclick=()=>zoom=THREE.MathUtils.clamp(zoom-1,0,9);
+
 $('shiftBtn').onclick=()=>{locked=!locked;$('shiftBtn').style.background=locked?'#ffe28a':'#ffffff18';$('shiftBtn').style.color=locked?'#14202b':'white'};
 let stickVec={x:0,y:0},stickActive=false,stickId=null,stickOrigin={x:0,y:0};const stick=$('stick'),nub=$('nub'),movezone=$('movezone');
 movezone.style.cssText='position:absolute;left:0;top:0;width:50%;height:100%;pointer-events:auto;touch-action:none';
