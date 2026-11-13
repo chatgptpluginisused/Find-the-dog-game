@@ -47,7 +47,7 @@ body.mobile-mode #bottom{display:none}
 <div id="game"></div>
 <div id="hud">
  <div id="brand" class="panel">FIND THE DOGS<small>EXPLORE • DISCOVER • COLLECT</small></div>
- <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
+ <div id="progress" class="panel"><div><strong id="count">0 / 28</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard" selected>Tracker</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="areaStatus" class="panel" style="position:absolute;top:112px;right:16px;padding:8px 12px;font-size:11px;display:none">BLOCKBYTE DISTRICT</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
@@ -59,7 +59,7 @@ body.mobile-mode #bottom{display:none}
 </div>
 <div id="toast"><strong id="toastTitle">Dog found!</strong><span id="toastText"></span></div>
 <div id="deviceChoice"><div class="card panel"><div class="eyebrow">WELCOME TO THE GREAT DOG HUNT</div><h2>How are you playing?</h2><p>Choose your device to set up the best controls and screen layout.</p><div class="actions"><button id="chooseComputer">COMPUTER</button><button id="chooseMobile" class="secondary">PHONE / TABLET</button></div></div></div>
-<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore two huge areas, find 25 camouflaged dogs, solve hidden switch puzzles, unlock the secret vault and beat difficult parkour challenges.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
+<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore five biomes, find hidden dogs in the world and paintings, uncover secret rooms and conquer skill-based tower obbies.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
 <div id="collection"><div class="wrap"><div class="eyebrow">YOUR FIELD GUIDE</div><h2>Dog collection</h2><p id="collectionSub" style="color:#bac8d2"></p><div id="dogs"></div><button id="closeCollection" class="secondary">BACK TO GAME</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -197,25 +197,35 @@ const trapMark=box(3.2,.05,3.2,mat(0xd8b66f),-72,10.2,-5);
 const pyramidOpening=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.1,8,16,1,true),sandDark);pyramidOpening.position.set(-72,6,-5);scene.add(pyramidOpening);
 for(let i=0;i<8;i++){const x=-95+(i%4)*14,z=-24+Math.floor(i/4)*38;const cactus=new THREE.Group();const stem=new THREE.Mesh(new THREE.CylinderGeometry(.45,.55,3,8),mat(0x39794b));stem.position.y=1.5;cactus.add(stem);for(const side of [-1,1]){const arm=new THREE.Mesh(new THREE.CylinderGeometry(.22,.25,1.3,8),mat(0x39794b));arm.position.set(side*.55,1.7,0);arm.rotation.z=side*.7;cactus.add(arm)}cactus.position.set(x,0,z);scene.add(cactus);}
 function hardRoute(points,color){for(const p of points)obbyPlatform(p[0],p[1],p[2],p[3]||3.2,p[4]||3.2,color);}
-hardRoute([[-93,-5,.7],[-89,-1,1.7],[-85,-6,2.8],[-81,-1,4],[-77,-6,5.2],[-73,-1,6.5],[-69,-6,7.8]],0xd9a74f);
-for(const p of [[-89,-1,1.7],[-81,-1,4],[-73,-1,6.5]])obbyHazard(p[0],p[1],p[2],1.35,1.35);
+// Pyramid tower: offset landings, a narrow ledge wrap and a final leap to the trap tile.
+hardRoute([[-94,-5,.65,3.1,3.1],[-90,-5,1.15,2.7,2.7],[-87,-1,1.65,2.6,2.6],[-84,3,2.15,2.5,2.5],[-81,6,2.65,2.4,2.4],[-78,6,3.15,2.4,2.4],[-75,3,3.65,2.4,2.4],[-72,0,4.15,2.4,2.4],[-69,-3,4.65,2.4,2.4],[-72,-5,5.15,2.4,2.4],[-72,-5,6.0,1.9,1.9]],0xd9a74f);
+obbyHazard(-84,3,2.15,1.0,1.0);obbyHazard(-75,3,3.65,.95,.95);
+// A thin ledge across the pyramid's outer face.
+obbyPlatform(-79,-8,3.7,7,.85,0xb88745);
+
 // Snow biome: ice spires, slippery-looking stepping stones and a frozen cave.
 for(let i=0;i<11;i++){const x=52+(i%4)*12,z=48+Math.floor(i/4)*12;const ice=new THREE.Mesh(new THREE.ConeGeometry(2.1,5+Math.random()*4,6),mat(0xc7f0fa));ice.position.set(x,2.5,z);ice.castShadow=true;scene.add(ice);}
 const frozenCave= new THREE.Mesh(new THREE.TorusGeometry(5,.8,8,18),mat(0x5ba6c4));frozenCave.position.set(72,3,88);frozenCave.rotation.x=Math.PI/2;scene.add(frozenCave);
-hardRoute([[51,91,.8],[56,86,1.8],[61,91,3],[66,86,4.4],[71,91,5.8],[76,86,7.2],[81,91,8.8]],0x8bd0e8);
-for(const p of [[56,86,1.8],[66,86,4.4],[76,86,7.2]])obbyHazard(p[0],p[1],p[2],1.25,1.25);
+// Frost tower: zig-zag ice steps, a narrow ice rail and a risky final corner.
+hardRoute([[50,91,.65,3.1,3.1],[53,88,1.2,2.7,2.7],[56,85,1.75,2.5,2.5],[59,82,2.3,2.4,2.4],[62,79,2.85,2.4,2.4],[65,76,3.4,2.4,2.4],[68,73,3.95,2.4,2.4],[71,70,4.5,2.4,2.4],[74,67,5.05,2.4,2.4],[77,64,5.6,2.4,2.4],[80,61,6.15,2.4,2.4]],0x8bd0e8);
+obbyPlatform(64,70,4.0,7,.85,0x75bfdc);
+obbyHazard(59,82,2.3,.95,.95);obbyHazard(71,70,4.5,.95,.95);
 // Swamp biome: giant mushrooms, fallen logs and a narrow zig-zag route.
 for(let i=0;i<10;i++){const x=-92+(i%5)*10,z=52+Math.floor(i/5)*18;const stem=new THREE.Mesh(new THREE.CylinderGeometry(.45,.7,3,8),mat(0xd7c4a1));stem.position.set(x,1.5,z);scene.add(stem);const cap=new THREE.Mesh(new THREE.SphereGeometry(2.2,12,8),mat(i%2?0xc85d70:0xb44f9b));cap.scale.y=.55;cap.position.set(x,3.2,z);scene.add(cap);}
-hardRoute([[-96,92,.7],[-91,87,1.6],[-86,92,2.7],[-81,87,4],[-76,92,5.5],[-71,87,7],[-66,92,8.5]],0x69a77a);
-for(const p of [[-91,87,1.6],[-81,87,4],[-71,87,7]])obbyHazard(p[0],p[1],p[2],1.2,1.2);
+// Swamp tower: stepping across mushroom caps and a fallen-log balance section.
+hardRoute([[-96,92,.6,3.2,3.2],[-93,88,1.1,2.8,2.8],[-90,84,1.6,2.5,2.5],[-87,80,2.1,2.4,2.4],[-84,76,2.6,2.4,2.4],[-81,72,3.1,2.4,2.4],[-78,68,3.6,2.4,2.4],[-75,64,4.1,2.4,2.4],[-72,60,4.6,2.4,2.4],[-69,56,5.1,2.4,2.4]],0x69a77a);
+obbyPlatform(-83,66,3.25,7,.9,0x527f68);
+obbyHazard(-90,84,1.6,.9,.9);obbyHazard(-78,68,3.6,.9,.9);
 // A hidden underground chamber: fall through the pyramid's marked tile, then beat its precision obby.
 const underFloor=box(42,.5,42,mat(0x252b3d),-72,-14,-5);
 const caveWalls=mat(0x39465b);
 box(42,12,.7,caveWalls,-72,-8,-26);box(42,12,.7,caveWalls,-72,-8,16);box(.7,12,42,caveWalls,-93,-8,-5);box(.7,12,42,caveWalls,-51,-8,-5);
 const undergroundPlatforms=[];
 function underStep(x,z,y,w=2.7,d=2.7,color=0x8c70c7){const mesh=box(w,.45,d,mat(color),x,y-.225,z);undergroundPlatforms.push({x,z,top:y,w,d,mesh});}
-[[-88,-5,-11],[-83,-1,-9.5],[-78,-5,-8],[-73,-1,-6.5],[-68,-5,-5],[-63,-1,-3.5],[-58,-5,-2]].forEach((p,i)=>underStep(p[0],p[1],p[2],2.6,2.6,[0x8c70c7,0x4d9fba,0x66b98b][i%3]));
-for(const p of [[-83,-1,-9.5],[-73,-1,-6.5],[-63,-1,-3.5]])obbyHazard(p[0],p[1],p[2]+.15,1.15,1.15);
+// Underground challenge: short precision jumps, a balance beam, then a final wraparound.
+[[-88,-5,-11],[-85,-2,-10.3],[-82,1,-9.6],[-79,4,-8.9],[-76,7,-8.2],[-73,10,-7.5],[-70,13,-6.8],[-67,16,-6.1],[-64,19,-5.4],[-61,22,-4.7],[-58,25,-4]].forEach((p,i)=>underStep(p[0],p[1],p[2],2.35,2.35,[0x8c70c7,0x4d9fba,0x66b98b][i%3]));
+underStep(-75,4,-7.9,6,.85,0xc18ae8);
+for(const p of [[-82,1,-9.6],[-70,13,-6.8],[-61,22,-4.7]])obbyHazard(p[0],p[1],p[2]+.15,.85,.85);
 const underExit=box(3,.25,3,mat(0x55e0b1),-57,-1.8,-5);
 let undergroundMode=false;
 const underCheckpoint=new THREE.Vector3(-88,-11,-5);
