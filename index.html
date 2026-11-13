@@ -297,6 +297,24 @@ for(const b of miniBiomes){
  }
  for(let i=0;i<6;i++){const a=i*Math.PI/3;const rock=sphere(.8,mats.stone,b.x+Math.cos(a)*5,.35,b.z+Math.sin(a)*5,1.2,.8,1);rock.rotation.y=a;}
 }
+// Each little realm gets a proper gateway and readable sign, like a Roblox find-game zone.
+function makeRealmGate(x,z,label,glowColor){
+ const glow=mat(glowColor),stone=mat(0x53616d),gate=new THREE.Group();
+ const left=new THREE.Mesh(new THREE.BoxGeometry(.75,4.1,.8),stone);left.position.set(-2,2.05,0);gate.add(left);
+ const right=left.clone();right.position.x=2;gate.add(right);
+ const top=new THREE.Mesh(new THREE.BoxGeometry(4.7,.75,.85),stone);top.position.set(0,4.15,0);gate.add(top);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(1.55,.17,10,32),glow);ring.position.set(0,2.15,.12);gate.add(ring);
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const ctx=canvas.getContext('2d');
+ ctx.fillStyle='#182631';ctx.fillRect(0,0,512,128);ctx.strokeStyle='#d6e2eb';ctx.lineWidth=8;ctx.strokeRect(5,5,502,118);
+ ctx.fillStyle='#ffffff';ctx.font='bold 44px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,256,66);
+ const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(4.2,1.05),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));sign.position.set(0,5.15,.48);gate.add(sign);
+ gate.position.set(x,0,z);scene.add(gate);
+}
+makeRealmGate(0,72,'FERN GROTTO',0x67d69b);
+makeRealmGate(91,-6,'CRYSTAL COVE',0x69d8ed);
+makeRealmGate(-8,-100,'BAMBOO HOLLOW',0xa3c96b);
+makeRealmGate(-91,73,'MUSHROOM NOOK',0xd879a5);
 const flatDogs=[];
 function makeDogPainting(x,y,z,rotation,color,name){
  const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;const ctx=canvas.getContext('2d');
