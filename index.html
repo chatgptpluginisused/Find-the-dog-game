@@ -87,6 +87,23 @@ for(let i=0;i<24;i++){const x=(Math.random()-.5)*65,z=(Math.random()-.5)*65;if(M
 for(let i=0;i<14;i++){const x=(Math.random()-.5)*90,z=(Math.random()-.5)*90;sphere(.7,mats.stone,x,.1,z,1.4,.7,1)}
 // Decorative sign
 box(2.6,1.5,.18,mats.wood,0,1.2,32);const signTop=box(2.9,.15,.3,mat(0x573b2b),0,2,32);
+// A second, block-built Roblox-style region: Blockbyte District.
+const blockConcrete=mat(0x8795a4),blockDark=mat(0x344354),blockBlue=mat(0x368ed0),blockNeon=mat(0x65f0dc),blockYellow=mat(0xffd35c),blockPurple=mat(0x9667d8);
+box(58,.18,58,mat(0x596b7b),69,.02,-62);
+for(let ix=0;ix<8;ix++)for(let iz=0;iz<8;iz++){box(6.8,.16,6.8,(ix+iz)%2?mat(0x647b8d):mat(0x71899b),43+ix*7.4,.16,-91+iz*7.4);}
+function blockBuilding(x,z,w,h,d,color){box(w,h,d,mat(color),x,h/2,z);for(let xx=-1;xx<=1;xx++)for(let zz=-1;zz<=1;zz++){if(Math.abs(xx)+Math.abs(zz)===0)continue;box(.22,.22,.22,blockNeon,x+xx*(w/2-.5),h+.12,z+zz*(d/2-.5));}box(w*.55,.35,.18,blockYellow,x,h*.68,z+d/2+.11);}
+blockBuilding(49,-48,12,9,10,0x3e7297);blockBuilding(87,-49,13,13,11,0x73569a);blockBuilding(48,-78,11,7,12,0x8b704b);blockBuilding(88,-78,14,10,12,0x4d806e);
+const secretSwitches=[];
+function secretSwitch(x,y,z){const g=new THREE.Group();const base=new THREE.Mesh(new THREE.BoxGeometry(.8,.8,.25),blockDark);g.add(base);const button=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),blockNeon);button.position.z=.2;g.add(button);g.position.set(x,y,z);scene.add(g);secretSwitches.push({group:g,found:false});}
+secretSwitch(45,1.2,-89);secretSwitch(91,1.2,-43);secretSwitch(64,1.2,-76);
+box(17,.35,15,mat(0x263647),84,.05,-65);
+box(17,5,.6,blockDark,84,2.5,-72.2);box(.6,5,15,blockDark,75.5,2.5,-65);box(.6,5,15,blockDark,92.5,2.5,-65);box(17,5,.6,blockDark,84,2.5,-57.5);box(17,.5,15,blockDark,84,5.15,-65);
+const vaultDoor=box(4,4,.45,blockPurple,84,2.1,-72.0);
+const vaultGlow=new THREE.Mesh(new THREE.TorusGeometry(2.1,.12,10,32),blockNeon);vaultGlow.position.set(84,2.2,-71.6);scene.add(vaultGlow);
+for(let i=0;i<6;i++){const y=1.1+i*2.05;const p=box(5,.55,5,mat([0x4c9fbd,0x9167c9,0x54b68a][i%3]),58+i*2.2,y,-58-i*2.4);obbyPlatforms.push({x:58+i*2.2,z:-58-i*2.4,top:y+.275,w:5,d:5,mesh:p});}
+for(let i=0;i<5;i++){const x=45+i*5.5,z=-37-i*2.5,top=1.4+i*.9;obbyPlatform(x,z,top,3.8,3.8,[0x4d9bc0,0x8b63c6,0x4aa77b][i%3]);}
+for(let i=0;i<4;i++)obbyHazard(52+i*5.5,-40-i*2.5,2.3+i*.9,1.5,1.5);
+box(4,.25,4,blockYellow,72,7.1,-51);
 // More park landmarks: cosy dog cabins, a picnic shelter and warm trail lights.
 function dogCabin(x,z,wallColor,roofColor){
  const walls=mat(wallColor),roof=mat(roofColor),door=mat(0x292a30);
@@ -191,6 +208,15 @@ function updateBoneCounter(){$('boneCount').textContent='GOLDEN BONES: '+bonesFo
 
 const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
+dogDefs.push(
+['Mossy',0x5b9d56,0x477d45,-25,9,.9],['Pebble',0x89949a,0x747f85,-39,-4,.88],
+['Bark',0x765039,0x60412f,18,48,.95],['Sandpup',0xc8ad7b,0xb69a68,-18,-48,.9],
+['Fern',0x34764d,0x2b603e,44,54,.9],['Rust',0x8b704b,0x765039,48,-77,.95],
+['Concrete',0x8795a4,0x71808d,78,-44,.9],['Byte',0x344354,0x263647,89,-80,.88],
+['Lilac',0x73569a,0x9667d8,83,-49,.9],['Reed',0x4d806e,0x34764d,48,-80,.9],
+['Crate',0x966b45,0x765039,61,-90,.9],['Glitch',0x368ed0,0x65f0dc,70,-59,.82],
+['Vault Pup',0x263647,0x65f0dc,81,-65,.85],['Cipher',0x344354,0x9667d8,87,-63,.82],
+['Obby',0x4c9fbd,0xffd35c,70,-51,.85]);
 dogDefs.forEach(d=>makeDog(...d));
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
 let sprintEnergy=100;let difficultyMode='hard';
@@ -340,6 +366,8 @@ if(firstPerson){
  const camOffset=new THREE.Vector3(Math.sin(yaw)*cp*dist,sp*dist,Math.cos(yaw)*cp*dist);
  camera.position.copy(target).add(camOffset);camera.lookAt(target);
 }
+for(let i=0;i<secretSwitches.length;i++){const s=secretSwitches[i];if(!s.found&&Math.hypot(player.x-s.group.position.x,player.z-s.group.position.z)<1.35){s.found=true;s.group.children[1].material=blockYellow;s.group.scale.setScalar(1.25);const n=secretSwitches.filter(v=>v.found).length;$('secretCount').textContent='SECRET SWITCHES: '+n+' / 3';showToast('HIDDEN SWITCH FOUND',n===3?'The vault door has unlocked!':'Find the other hidden switches.');if(n===3){vaultDoor.position.y=7;showToast('SECRET VAULT OPENED','A hidden room has been revealed.');}}}
+if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&player.y<1.5){player.set(84,0,-65);velocityY=0;horizontalVelocity.set(0,0);showToast('SECRET ROOM','You found the hidden vault.');}
 for(const b of bones){
  if(!b.visible)continue;
  b.rotation.y+=dt*.9;b.position.y=.8+Math.sin(clock.elapsedTime*2+b.userData.phase)*.12;
