@@ -23,7 +23,7 @@ button,select,input{font:inherit}button{border:0;border-radius:12px;padding:12px
 /* Roblox-style mobile jump placement: lower-right, separate from the top action buttons */
 .mobileBtns .jump{position:fixed;right:28px;bottom:34px;top:auto;width:88px;height:88px;z-index:4}
 
-#toast{position:fixed;z-index:8;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;transition:.25s;background:#0b1722ed;border:1px solid var(--line);border-radius:14px;padding:13px 18px;text-align:center;pointer-events:none}#toast.show{opacity:1;transform:translate(-50%,0)}#toast strong{display:block;color:var(--gold);font-size:16px}#toast span{font-size:12px;color:#d5e0e8}
+#stamina{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(230px,42vw);padding:9px 12px;background:rgba(12,20,30,.62);border:1px solid rgba(255,255,255,.18);border-radius:12px;backdrop-filter:blur(10px);pointer-events:none;z-index:2}#staminaLabel{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:5px}#staminaTrack{height:7px;background:#ffffff30;border-radius:8px;overflow:hidden}#staminaFill{height:100%;width:100%;background:linear-gradient(90deg,#72e6a0,#d8f47a);border-radius:8px;transition:width .08s linear}body.mobile-mode #stamina{bottom:12px;left:50%;width:155px;padding:7px 9px}body.mobile-mode #staminaLabel{font-size:9px}#toast{position:fixed;z-index:8;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;transition:.25s;background:#0b1722ed;border:1px solid var(--line);border-radius:14px;padding:13px 18px;text-align:center;pointer-events:none}#toast.show{opacity:1;transform:translate(-50%,0)}#toast strong{display:block;color:var(--gold);font-size:16px}#toast span{font-size:12px;color:#d5e0e8}
 
 body.mobile-mode #brand{top:10px;left:10px;font-size:14px;padding:9px 12px}
 body.mobile-mode #progress{top:10px;right:10px;min-width:130px;padding:9px 11px;font-size:11px}
@@ -50,7 +50,7 @@ body.mobile-mode #bottom{display:none}
  <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal" selected>Adventurer</option><option value="hard">Tracker</option></select></label></div>
- <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div>
+ <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · Wheel zoom · M collection</div>
 </div>
 <div id="mobile">
@@ -100,6 +100,7 @@ const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
 dogDefs.forEach(d=>makeDog(...d));
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
+let sprintEnergy=100;
 let deviceMode='computer';
 $('chooseComputer').onclick=()=>{deviceMode='computer';document.body.classList.remove('mobile-mode');$('deviceChoice').style.display='none'};
 $('chooseMobile').onclick=()=>{deviceMode='mobile';document.body.classList.add('mobile-mode');$('deviceChoice').style.display='none'};
@@ -179,7 +180,7 @@ const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new
 if(keys.KeyW||keys.ArrowUp)move.add(forward);if(keys.KeyS||keys.ArrowDown)move.sub(forward);if(keys.KeyD||keys.ArrowRight)move.add(right);if(keys.KeyA||keys.ArrowLeft)move.sub(right);
 move.addScaledVector(forward,-stickVec.y);move.addScaledVector(right,stickVec.x);if(move.lengthSq()>0)move.normalize();
 // Accelerate smoothly, with less control while airborne and gentle ground friction.
-const speed=(keys.ControlLeft||sprintHeld)?12:7;
+const wantsSprint=keys.ControlLeft||sprintHeld;\nif(wantsSprint&&sprintEnergy>0)sprintEnergy=Math.max(0,sprintEnergy-34*dt);else sprintEnergy=Math.min(100,sprintEnergy+23*dt);\nconst sprinting=wantsSprint&&sprintEnergy>0;\nconst speed=sprinting?12:7;\n$('staminaFill').style.width=sprintEnergy+'%';$('staminaValue').textContent=Math.round(sprintEnergy)+'%';
 const targetVelocity=move.clone().multiplyScalar(speed);
 const acceleration=onGround?(move.lengthSq()>.001?30:24):9;
 horizontalVelocity.x=THREE.MathUtils.damp(horizontalVelocity.x,targetVelocity.x,acceleration,dt);
