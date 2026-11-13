@@ -48,7 +48,7 @@ body.mobile-mode #bottom{display:none}
 <div id="hud">
  <div id="brand" class="panel">FIND THE DOGS<small>EXPLORE • DISCOVER • COLLECT</small></div>
  <div id="progress" class="panel"><div><strong id="count">0 / 28</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
- <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
+ <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button><button id="resetBtn" class="secondary" style="position:absolute;top:76px;left:112px;pointer-events:auto;padding:9px 13px;font-size:11px">RESET</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard" selected>Tracker</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="areaStatus" class="panel" style="position:absolute;top:112px;right:16px;padding:8px 12px;font-size:11px;display:none">BLOCKBYTE DISTRICT</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · M collection</div>
@@ -192,8 +192,9 @@ biomePatch(-72,70,swampMat,54,54);
 const sandStone=mat(0xc69b59),sandDark=mat(0x8f693e),pyramid=new THREE.Group();
 for(let level=0;level<5;level++){const width=20-level*3.5;const tier=new THREE.Mesh(new THREE.BoxGeometry(width,2,width),level%2?sandDark:sandStone);tier.position.y=level*2+1;tier.castShadow=true;tier.receiveShadow=true;pyramid.add(tier);}
 pyramid.position.set(-72,0,-5);scene.add(pyramid);
-const pyramidTrap=box(4,.18,4,mat(0x5a4634),-72,10.08,-5);
-const trapMark=box(3.2,.05,3.2,mat(0xd8b66f),-72,10.2,-5);
+// The marked trap tile is placed at a reachable height so the entrance can actually be used.
+const pyramidTrap=box(4,.18,4,mat(0x5a4634),-72,6.08,-5);
+const trapMark=box(3.2,.05,3.2,mat(0xd8b66f),-72,6.2,-5);
 const pyramidOpening=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.1,8,16,1,true),sandDark);pyramidOpening.position.set(-72,6,-5);scene.add(pyramidOpening);
 for(let i=0;i<8;i++){const x=-95+(i%4)*14,z=-24+Math.floor(i/4)*38;const cactus=new THREE.Group();const stem=new THREE.Mesh(new THREE.CylinderGeometry(.45,.55,3,8),mat(0x39794b));stem.position.y=1.5;cactus.add(stem);for(const side of [-1,1]){const arm=new THREE.Mesh(new THREE.CylinderGeometry(.22,.25,1.3,8),mat(0x39794b));arm.position.set(side*.55,1.7,0);arm.rotation.z=side*.7;cactus.add(arm)}cactus.position.set(x,0,z);scene.add(cactus);}
 function hardRoute(points,color){for(const p of points)obbyPlatform(p[0],p[1],p[2],p[3]||3.2,p[4]||3.2,color);}
@@ -323,6 +324,12 @@ function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const
 function openCollection(){$('collection').style.display='block';renderCollection();document.exitPointerLock?.()}
 function collectFlatDog(flat){if(!flat||flat.found)return;flat.found=true;found.add(flat.name);flat.picture.visible=false;flat.frame.material=mat(0xffd56a);updateProgress();showToast('SECRET PAINTING DOG FOUND',flat.name+' was hiding in the picture!');renderCollection();}
 function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===dogDefs.length+flatDogs.length)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
+function resetPlayer(){
+ player.copy(activeCheckpoint);velocityY=0;horizontalVelocity.set(0,0);onGround=true;jumpHeld=false;sprintHeld=false;
+ showToast('PLAYER RESET','Returned to your latest checkpoint.');
+}
+$('resetBtn').addEventListener('click',e=>{e.preventDefault();resetPlayer()});
+document.addEventListener('keydown',e=>{if(e.code==='KeyR'&&playing)resetPlayer()});
 function start(){playing=true;$('deviceChoice').style.display='none';$('menu').style.display='none';$('settings').style.display='none';if(deviceMode==='computer')renderer.domElement.requestPointerLock?.()}
 $('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsBtn').onclick=()=>$('settings').style.display=$('settings').style.display==='block'?'none':'block';
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
@@ -402,7 +409,7 @@ if(velocityY<=0){
 }
 if(!undergroundMode&&!onGround&&player.y<=0){player.y=0;velocityY=0;onGround=true}
 if(undergroundMode&&!onGround&&player.y<=-14){player.y=-14;velocityY=0;onGround=true}
-if(!undergroundMode&&Math.hypot(player.x+72,player.z+5)<1.55&&player.y<8.2){undergroundMode=true;player.set(-88,-10.5,-5);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.copy(underCheckpoint);onGround=true;showToast('PYRAMID TRAP!','You fell through the false floor. Beat the underground obby!')}
+if(!undergroundMode&&Math.hypot(player.x+72,player.z+5)<1.8&&player.y<6.8){undergroundMode=true;player.set(-88,-10.5,-5);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.copy(underCheckpoint);onGround=true;showToast('PYRAMID TRAP!','You fell through the false floor. Beat the underground obby!')}
 if(undergroundMode&&Math.hypot(player.x+73,player.z+10)<2.2&&activeCheckpoint.x!==-73){activeCheckpoint.set(-73,-7.5,-7.5);showToast('CAVE CHECKPOINT','Your underground progress is saved.')}
 if(undergroundMode&&Math.hypot(player.x+57,player.z+5)<2.1&&player.y<0){undergroundMode=false;player.set(-72,0,-35);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.set(-72,0,-35);showToast('CAVE ESCAPED','You conquered the pyramid challenge!')}
 if(undergroundMode&&player.y<-20){player.copy(underCheckpoint);velocityY=0;horizontalVelocity.set(0,0);showToast('FELL!','Back to the underground checkpoint.')}
