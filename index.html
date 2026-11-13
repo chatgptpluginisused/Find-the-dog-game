@@ -50,7 +50,7 @@ body.mobile-mode #bottom{display:none}
  <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal" selected>Adventurer</option><option value="hard">Tracker</option></select></label></div>
- <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
+ <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · Wheel zoom · M collection</div>
 </div>
 <div id="mobile">
@@ -87,6 +87,38 @@ for(let i=0;i<24;i++){const x=(Math.random()-.5)*65,z=(Math.random()-.5)*65;if(M
 for(let i=0;i<14;i++){const x=(Math.random()-.5)*90,z=(Math.random()-.5)*90;sphere(.7,mats.stone,x,.1,z,1.4,.7,1)}
 // Decorative sign
 box(2.6,1.5,.18,mats.wood,0,1.2,32);const signTop=box(2.9,.15,.3,mat(0x573b2b),0,2,32);
+// Dog-themed parkour trail: raised jumps, lava pads, checkpoints, launch pad and finish gate.
+const obbyPlatforms=[],obbyHazards=[];
+let activeCheckpoint=new THREE.Vector3(0,0,48),obbyCompleted=false,launchCooldown=0;
+function obbyPlatform(x,z,top,w=5,d=5,color=0x4b9fba){
+ const mesh=box(w,.6,d,mat(color),x,top-.3,z);
+ obbyPlatforms.push({x,z,top,w,d,mesh});
+ return mesh;
+}
+function obbyHazard(x,z,top,w=2.2,d=2.2){
+ const mesh=box(w,.12,d,mat(0xe84b42),x,top+.07,z);
+ obbyHazards.push({x,z,top,w,d,mesh});
+}
+const obbySteps=[
+ [18,43,.8],[18,37,1.6],[23,32,2.4],[28,27,3.2],[33,22,4.0],[38,17,4.8]
+];
+obbySteps.forEach((p,i)=>obbyPlatform(p[0],p[1],p[2],5,5,i===5?0xd5a64c:0x4b9fba));
+obbyHazard(28,27,3.2,2.1,2.1);
+obbyHazard(38,17,4.8,1.8,1.8);
+// Checkpoint flags and a glowing launch pad.
+function obbyMarker(x,y,z,color){
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,2.2,8),mat(0xe8edf2));pole.position.set(x,y+1.1,z);scene.add(pole);
+ const flag=new THREE.Mesh(new THREE.BoxGeometry(.9,.48,.08),mat(color));flag.position.set(x+.48,y+1.8,z);scene.add(flag);
+}
+obbyMarker(23,2.4,32,0x62e6a1);
+obbyMarker(38,4.8,17,0xffd56a);
+const launchPad=box(2.4,.18,2.4,mat(0x36d5d0),33,4.12,22);
+const finishGate=new THREE.Group();
+const gateMat=mat(0xffd56a);
+const gateLeft=new THREE.Mesh(new THREE.BoxGeometry(.25,3,.25),gateMat);gateLeft.position.set(40,6.3,17);finishGate.add(gateLeft);
+const gateRight=gateLeft.clone();gateRight.position.x=36;finishGate.add(gateRight);
+const gateTop=new THREE.Mesh(new THREE.BoxGeometry(4.2,.25,.25),gateMat);gateTop.position.set(38,7.75,17);finishGate.add(gateTop);scene.add(finishGate);
+
 function makeDog(name,color,accent,x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);const fur=mat(color),detail=mat(accent),dark=mat(0x29252a),nose=mat(0x18171a);
 const body=new THREE.Mesh(new THREE.SphereGeometry(.62,18,14),fur);body.scale.set(1.25,.78,.82);body.position.y=.75;body.castShadow=true;g.add(body);
 const head=new THREE.Mesh(new THREE.SphereGeometry(.43,18,14),fur);head.position.set(0,1.25,.57);head.castShadow=true;g.add(head);
@@ -180,7 +212,11 @@ const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new
 if(keys.KeyW||keys.ArrowUp)move.add(forward);if(keys.KeyS||keys.ArrowDown)move.sub(forward);if(keys.KeyD||keys.ArrowRight)move.add(right);if(keys.KeyA||keys.ArrowLeft)move.sub(right);
 move.addScaledVector(forward,-stickVec.y);move.addScaledVector(right,stickVec.x);if(move.lengthSq()>0)move.normalize();
 // Accelerate smoothly, with less control while airborne and gentle ground friction.
-const wantsSprint=keys.ControlLeft||sprintHeld;\nif(wantsSprint&&sprintEnergy>0)sprintEnergy=Math.max(0,sprintEnergy-34*dt);else sprintEnergy=Math.min(100,sprintEnergy+23*dt);\nconst sprinting=wantsSprint&&sprintEnergy>0;\nconst speed=sprinting?12:7;\n$('staminaFill').style.width=sprintEnergy+'%';$('staminaValue').textContent=Math.round(sprintEnergy)+'%';
+const wantsSprint=keys.ControlLeft||sprintHeld;
+if(wantsSprint&&sprintEnergy>0)sprintEnergy=Math.max(0,sprintEnergy-34*dt);else sprintEnergy=Math.min(100,sprintEnergy+23*dt);
+const sprinting=wantsSprint&&sprintEnergy>0;
+const speed=sprinting?12:7;
+$('staminaFill').style.width=sprintEnergy+'%';$('staminaValue').textContent=Math.round(sprintEnergy)+'%';
 const targetVelocity=move.clone().multiplyScalar(speed);
 const acceleration=onGround?(move.lengthSq()>.001?30:24):9;
 horizontalVelocity.x=THREE.MathUtils.damp(horizontalVelocity.x,targetVelocity.x,acceleration,dt);
@@ -190,10 +226,34 @@ player.x=THREE.MathUtils.clamp(player.x,-73,73);player.z=THREE.MathUtils.clamp(p
 if(player.x===-73||player.x===73)horizontalVelocity.x=0;
 if(player.z===-73||player.z===73)horizontalVelocity.z=0;
 // Gravity and a stable landing on the park floor.
-const wasGrounded=onGround;
+const previousY=player.y;
 velocityY-=24*dt;player.y+=velocityY*dt;
-if(player.y<=0){player.y=0;velocityY=0;onGround=true}else onGround=false;
+onGround=false;
+if(velocityY<=0){
+ for(const p of obbyPlatforms){
+  const within=Math.abs(player.x-p.x)<p.w/2-.25&&Math.abs(player.z-p.z)<p.d/2-.25;
+  if(within&&previousY>=p.top-.18&&player.y<=p.top){player.y=p.top;velocityY=0;onGround=true;break}
+ }
+}
+if(!onGround&&player.y<=0){player.y=0;velocityY=0;onGround=true}
 if(jumpHeld&&onGround)jump();
+launchCooldown=Math.max(0,launchCooldown-dt);
+for(const h of obbyHazards){
+ if(Math.abs(player.x-h.x)<h.w/2&&Math.abs(player.z-h.z)<h.d/2&&Math.abs(player.y-h.top)<1.25){
+  player.copy(activeCheckpoint);velocityY=0;horizontalVelocity.set(0,0);onGround=true;showToast('OOPS! TRY AGAIN','You returned to your last checkpoint.');break;
+ }
+}
+if(Math.hypot(player.x-23,player.z-32)<2.2&&player.y>=2.0&&player.y<3.8&&activeCheckpoint.x!==23){
+ activeCheckpoint.set(23,2.4,32);showToast('CHECKPOINT REACHED','Your progress is saved for this obby run.');
+}
+if(Math.hypot(player.x-38,player.z-17)<2.1&&player.y>4.2&&!obbyCompleted){
+ obbyCompleted=true;activeCheckpoint.set(38,4.8,17);showToast('OBBY COMPLETE!','You made it through the dog parkour trail.');
+ $('obbyStatus').textContent='OBBY COMPLETE'; 
+}
+if(launchCooldown===0&&Math.hypot(player.x-33,player.z-22)<1.5&&Math.abs(player.y-4.0)<1.2){
+ velocityY=14;onGround=false;launchCooldown=1.2;showToast('DOG BOOST!','The launch pad sent you flying.');
+}
+
 const actualSpeed=Math.hypot(horizontalVelocity.x,horizontalVelocity.z);
 avatar.position.set(player.x,player.y,player.z);
 // In shift lock, keep the avatar facing the camera's forward direction (away from the camera).
@@ -222,7 +282,7 @@ if(nearest<1.45){collect(nearDog)}else if(nearest<4.2){$('hint').textContent='Wa
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
-updateProgress();
+updateProgress();$('obbyStatus').style.display='block';
 </script>
 </body>
 </html>
