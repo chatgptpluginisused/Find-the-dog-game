@@ -87,37 +87,52 @@ for(let i=0;i<24;i++){const x=(Math.random()-.5)*65,z=(Math.random()-.5)*65;if(M
 for(let i=0;i<14;i++){const x=(Math.random()-.5)*90,z=(Math.random()-.5)*90;sphere(.7,mats.stone,x,.1,z,1.4,.7,1)}
 // Decorative sign
 box(2.6,1.5,.18,mats.wood,0,1.2,32);const signTop=box(2.9,.15,.3,mat(0x573b2b),0,2,32);
-// Dog-themed parkour trail: raised jumps, lava pads, checkpoints, launch pad and finish gate.
+// Rebuilt dog adventure course: connected stepping stones, timber bridges, hoops and checkpoints.
 const obbyPlatforms=[],obbyHazards=[];
 let activeCheckpoint=new THREE.Vector3(0,0,48),obbyCompleted=false,launchCooldown=0;
-function obbyPlatform(x,z,top,w=5,d=5,color=0x4b9fba){
- const mesh=box(w,.6,d,mat(color),x,top-.3,z);
- obbyPlatforms.push({x,z,top,w,d,mesh});
- return mesh;
+const courseWood=mat(0x91633e),courseGold=mat(0xf2c45f),courseBlue=mat(0x4c9fbd);
+function obbyPlatform(x,z,top,w=7,d=6,color=0x4b9fba){
+ const mesh=box(w,.72,d,mat(color),x,top-.36,z);
+ box(w+.16,.16,d+.16,courseWood,x,top-.78,z);
+ for(const sx of [-1,1]) for(const sz of [-1,1]) box(.2,Math.max(.2,top-.78),.2,courseWood,x+sx*(w/2-.25),(top-.78)/2,z+sz*(d/2-.25));
+ obbyPlatforms.push({x,z,top,w,d,mesh});return mesh;
 }
-function obbyHazard(x,z,top,w=2.2,d=2.2){
- const mesh=box(w,.12,d,mat(0xe84b42),x,top+.07,z);
+function obbyHazard(x,z,top,w=2,d=2){
+ const mesh=box(w,.14,d,mat(0xe84b42),x,top+.08,z);
+ for(let i=-1;i<=1;i++)box(.1,.025,d-.25,mat(0xffb0a1),x+i*(w/3),top+.17,z);
  obbyHazards.push({x,z,top,w,d,mesh});
 }
+function courseBridge(x,z,length,rotation=0){
+ const group=new THREE.Group();group.position.set(x,.15,z);group.rotation.y=rotation;
+ for(let i=0;i<Math.floor(length/.85);i++){const plank=new THREE.Mesh(new THREE.BoxGeometry(2.7,.2,.72),courseWood);plank.position.z=i*.85-length/2+.4;plank.castShadow=true;group.add(plank)}
+ for(const side of [-1,1]){const rail=new THREE.Mesh(new THREE.BoxGeometry(.14,.5,length),courseGold);rail.position.set(side*1.28,.42,0);group.add(rail)}
+ scene.add(group);
+}
+function courseHoop(x,z,y,color=0x66d5c2){
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.85,.09,10,28),mat(color));ring.position.set(x,y,z);ring.rotation.y=Math.PI/2;ring.castShadow=true;scene.add(ring);
+ for(const side of [-1,1])box(.16,y,.16,courseWood,x+side*.95,y/2,z);
+}
 const obbySteps=[
- [18,43,.8],[18,37,1.6],[23,32,2.4],[28,27,3.2],[33,22,4.0],[38,17,4.8]
+ [6,45,.35,7,6,0x6eaa79],[12,41,.65,7,6,0x75b6a0],[18,37,1,7,6,0x5e9fbd],
+ [23,32,1.35,7,6,0x6b9dbd],[28,27,1.7,7,6,0x75b6a0],[33,22,2.05,7,6,0x5e9fbd],[38,17,2.4,8,7,0xd5a64c]
 ];
-obbySteps.forEach((p,i)=>obbyPlatform(p[0],p[1],p[2],5,5,i===5?0xd5a64c:0x4b9fba));
-obbyHazard(28,27,3.2,2.1,2.1);
-obbyHazard(38,17,4.8,1.8,1.8);
-// Checkpoint flags and a glowing launch pad.
+obbySteps.forEach(p=>obbyPlatform(p[0],p[1],p[2],p[3],p[4],p[5]));
+courseBridge(15,39,6,.7);courseBridge(25.5,29.5,6,.7);
+courseHoop(10,41,2);courseHoop(31,24,2.3,0x74c9e6);
+obbyHazard(23,32,1.35,1.8,1.8);obbyHazard(33,22,2.05,1.8,1.8);
+const launchPad=box(2.5,.2,2.5,mat(0x36d5d0),33,2.18,22);
+const launchRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.08,8,28),mat(0x9ff8ec));launchRing.rotation.x=Math.PI/2;launchRing.position.set(33,2.32,22);scene.add(launchRing);
 function obbyMarker(x,y,z,color){
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,2.2,8),mat(0xe8edf2));pole.position.set(x,y+1.1,z);scene.add(pole);
- const flag=new THREE.Mesh(new THREE.BoxGeometry(.9,.48,.08),mat(color));flag.position.set(x+.48,y+1.8,z);scene.add(flag);
+ const flag=new THREE.Mesh(new THREE.BoxGeometry(1,.5,.08),mat(color));flag.position.set(x+.52,y+1.8,z);scene.add(flag);
+ const base=new THREE.Mesh(new THREE.CylinderGeometry(.48,.58,.2,12),courseGold);base.position.set(x,y+.1,z);scene.add(base);
 }
-obbyMarker(23,2.4,32,0x62e6a1);
-obbyMarker(38,4.8,17,0xffd56a);
-const launchPad=box(2.4,.18,2.4,mat(0x36d5d0),33,4.12,22);
-const finishGate=new THREE.Group();
-const gateMat=mat(0xffd56a);
-const gateLeft=new THREE.Mesh(new THREE.BoxGeometry(.25,3,.25),gateMat);gateLeft.position.set(40,6.3,17);finishGate.add(gateLeft);
+obbyMarker(23,1.35,32,0x62e6a1);obbyMarker(38,2.4,17,0xffd56a);
+const finishGate=new THREE.Group(),gateMat=mat(0xffd56a);
+const gateLeft=new THREE.Mesh(new THREE.BoxGeometry(.3,3.5,.3),gateMat);gateLeft.position.set(40,4.25,17);finishGate.add(gateLeft);
 const gateRight=gateLeft.clone();gateRight.position.x=36;finishGate.add(gateRight);
-const gateTop=new THREE.Mesh(new THREE.BoxGeometry(4.2,.25,.25),gateMat);gateTop.position.set(38,7.75,17);finishGate.add(gateTop);scene.add(finishGate);
+const gateTop=new THREE.Mesh(new THREE.BoxGeometry(4.3,.3,.3),gateMat);gateTop.position.set(38,6,17);finishGate.add(gateTop);
+const gateGlow=new THREE.Mesh(new THREE.TorusGeometry(1.45,.08,10,32),mat(0xffe7a0));gateGlow.position.set(38,4.45,17);gateGlow.rotation.y=Math.PI/2;finishGate.add(gateGlow);scene.add(finishGate);
 
 function makeDog(name,color,accent,x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);const fur=mat(color),detail=mat(accent),dark=mat(0x29252a),nose=mat(0x18171a);
 const body=new THREE.Mesh(new THREE.SphereGeometry(.62,18,14),fur);body.scale.set(1.25,.78,.82);body.position.y=.75;body.castShadow=true;g.add(body);
@@ -178,6 +193,8 @@ document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyM')ope
 document.addEventListener('keyup',e=>keys[e.code]=false);
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===renderer.domElement){const lookSensitivity=zoomAdjustedSensitivity();yaw-=e.movementX*.002*lookSensitivity;pitch-=e.movementY*.002*lookSensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)}});
 renderer.domElement.addEventListener('click',()=>{if(playing&&deviceMode==='computer'&&document.pointerLockElement!==renderer.domElement)renderer.domElement.requestPointerLock?.()});
+renderer.domElement.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
+window.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
 
 function jump(){if(onGround){velocityY=9.2;onGround=false}}
 document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();jumpHeld=true;jump()}});
@@ -202,10 +219,10 @@ function moveStick(e){let dx=e.clientX-stickOrigin.x,dy=e.clientY-stickOrigin.y;
 function endStick(){stickActive=false;stickId=null;stickVec={x:0,y:0};nub.style.transform='translate(0,0)';stick.style.display='none'}
 movezone.addEventListener('pointerup',endStick);movezone.addEventListener('pointercancel',endStick);
 const look=$('lookzone');const lookPointers=new Map();let pinchStart=0,pinchZoom=0;
-function pointerDistance(){const p=[...lookPointers.values()];return p.length>=2?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}
+function pointerDistance(){const p=[...lookPointers.values()];return p.length===2?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}
 look.addEventListener('pointerdown',e=>{look.setPointerCapture(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size===2){pinchStart=pointerDistance();pinchZoom=zoom}});
-look.addEventListener('pointermove',e=>{if(!lookPointers.has(e.pointerId))return;const previous=lookPointers.get(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size>=2){const distance=pointerDistance();if(pinchStart>0)zoom=THREE.MathUtils.clamp(pinchZoom+(distance-pinchStart)*.035,0,5.5);return}const dx=e.clientX-previous.x,dy=e.clientY-previous.y;const lookSensitivity=zoomAdjustedSensitivity();yaw-=dx*.006*lookSensitivity;pitch-=dy*.006*lookSensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)});
-function endLook(e){lookPointers.delete(e.pointerId);if(lookPointers.size<2)pinchStart=0}
+look.addEventListener('pointermove',e=>{if(!lookPointers.has(e.pointerId))return;const previous=lookPointers.get(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size===2){const distance=pointerDistance();if(pinchStart>0&&Math.abs(distance-pinchStart)>8)zoom=THREE.MathUtils.clamp(pinchZoom+(distance-pinchStart)*.035,0,5.5);return}const dx=e.clientX-previous.x,dy=e.clientY-previous.y;const lookSensitivity=zoomAdjustedSensitivity();yaw-=dx*.006*lookSensitivity;pitch-=dy*.006*lookSensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)});
+function endLook(e){lookPointers.delete(e.pointerId);if(lookPointers.size<2){pinchStart=0;pinchZoom=zoom}}
 look.addEventListener('pointerup',endLook);look.addEventListener('pointercancel',endLook);
 function update(dt){if(!playing)return;
 const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));let move=new THREE.Vector3();
