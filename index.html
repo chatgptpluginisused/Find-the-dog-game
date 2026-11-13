@@ -69,7 +69,7 @@ button{transition:filter .15s,transform .15s}button:hover{filter:brightness(1.08
  <div id="brand" class="panel">FIND THE PETS<small>EXPLORE • DISCOVER • COLLECT</small></div>
  <div id="progress" class="panel"><div><strong id="count">0 / 36</strong> <span style="opacity:.7;font-size:11px">PETS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button><button id="resetBtn" class="secondary" style="position:absolute;top:76px;left:112px;pointer-events:auto;padding:9px 13px;font-size:11px">RESET</button><button id="worldsBtn" class="secondary" style="position:absolute;top:76px;left:194px;pointer-events:auto;padding:9px 13px;font-size:11px">WORLDS</button>
- <div id="worlds" class="panel"><h3>WORLD SELECT</h3><p id="worldHint">Find 5 dogs to unlock fast travel. Every area has its own secrets.</p><div id="worldGrid"><button data-world="park">DOG PARK<span>Starting world</span></button><button data-world="desert">DESERT RUINS<span>Pyramid and buried route</span></button><button data-world="frost">FROST PEAK<span>Ice caves and ledges</span></button><button data-world="swamp">MUSHROOM SWAMP<span>Hidden paths and logs</span></button><button data-world="blockbyte">BLOCKBYTE DISTRICT<span>Buildings and vault</span></button><button data-world="fern">FERN GROTTO<span>Quiet woodland hideout</span></button><button data-world="crystal">CRYSTAL COVE<span>Crystal formations</span></button><button data-world="bamboo">BAMBOO HOLLOW<span>Overgrown secret nook</span></button><button data-world="mushroom">MUSHROOM NOOK<span>Small hidden clearing</span></button></div></div><div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard" selected>Tracker</option></select></label></div>
+ <div id="worlds" class="panel"><h3>WORLD SELECT</h3><p id="worldHint">Find 5 dogs to unlock fast travel. Every area has its own secrets.</p><div id="worldGrid"><button data-world="park">DOG PARK<span>Starting world</span></button><button data-world="desert">DESERT RUINS<span>Pyramid and buried route</span></button><button data-world="frost">FROST PEAK<span>Ice caves and ledges</span></button><button data-world="swamp">MUSHROOM SWAMP<span>Hidden paths and logs</span></button><button data-world="blockbyte">BLOCKBYTE DISTRICT<span>Buildings and vault</span></button><button data-world="fern">FERN GROTTO<span>Quiet woodland hideout</span></button><button data-world="crystal">CRYSTAL COVE<span>Crystal formations</span></button><button data-world="bamboo">BAMBOO HOLLOW<span>Overgrown secret nook</span></button><button data-world="mushroom">MUSHROOM NOOK<span>Small hidden clearing</span></button></div></div><div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard">Tracker</option><option value="nightmare" selected>Nightmare</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="areaStatus" class="panel" style="position:absolute;top:112px;right:16px;padding:8px 12px;font-size:11px;display:none">BLOCKBYTE DISTRICT</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · M collection</div>
 </div>
@@ -306,12 +306,12 @@ dogDefs.push(
 dogDefs.forEach(d=>makeDog(...d));
 [['Whiskers','cat',0xd28e67,0xf0c39a,-43,-56,.82],['Copper','fox',0xb96f39,0xf2d3a2,43,-55,.86],['Thistle','bunny',0xe4d9c8,0xb9a9a0,-43,57,.78],['Pebbleback','turtle',0x6c9b72,0x3e6650,14,-64,.9],['Pip','bird',0x5d9fc4,0xd8e9f2,78,25,.72]].forEach(p=>makePet(...p));
 // Puzzle dogs are hidden until each three-symbol floor sequence is solved.
-const puzzleDogs=[{name:'Glyph',color:0x9b83d4,accent:0xe2d5ff,x:0,z:86,order:[0,2,1]},{name:'Prism',color:0x5ba6c4,accent:0xc7f0fa,x:91,z:8,order:[1,0,2]},{name:'Bamboo',color:0x5b9d56,accent:0xb6d98a,x:-8,z:-86,order:[2,1,0]}];
+const puzzleDogs=[{name:'Glyph',color:0x9b83d4,accent:0xe2d5ff,x:0,z:86,order:[0,2,1,2,0]},{name:'Prism',color:0x5ba6c4,accent:0xc7f0fa,x:91,z:8,order:[1,0,2,0,1]},{name:'Bamboo',color:0x5b9d56,accent:0xb6d98a,x:-8,z:-86,order:[2,1,0,1,2]}];
 const floorPuzzles=[];
 for(const p of puzzleDogs){
  const dog=makeDog(p.name,p.color,p.accent,p.x,p.z,.72);dog.visible=false;
  const pads=[];
- for(let i=0;i<3;i++){const a=i*Math.PI*2/3-Math.PI/2,px=p.x+Math.cos(a)*2.5,pz=p.z+Math.sin(a)*2.5;const pad=box(1.35,.16,1.35,mat([0x7d6cc4,0x4d9eb7,0x78a65b][i]),px,.08,pz);const mark=box(.42,.08,.42,mat(0xf4e4a2),px,.2,pz);pads.push({x:px,z:pz,mesh:pad,mark,pressed:false,index:i});}
+ for(let i=0;i<5;i++){const a=i*Math.PI*2/5-Math.PI/2,px=p.x+Math.cos(a)*3.5,pz=p.z+Math.sin(a)*3.5;const pad=box(1.35,.16,1.35,mat([0x7d6cc4,0x4d9eb7,0x78a65b][i]),px,.08,pz);const mark=box(.42,.08,.42,mat(0xf4e4a2),px,.2,pz);pads.push({x:px,z:pz,mesh:pad,mark,pressed:false,index:i});}
  floorPuzzles.push({name:p.name,order:p.order,pads,next:0,complete:false,dog});
 }
 // Four compact sub-biomes with tucked-away paths and cover.
@@ -361,7 +361,7 @@ makeDogPainting(99,2.2,70,Math.PI/2,'#9bd6e8','Frost Sketch');
 makeDogPainting(-99,2.2,70,-Math.PI/2,'#547f68','Swamp Doodle');
 
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
-let sprintEnergy=100;let difficultyMode='hard';
+let sprintEnergy=100;let difficultyMode='nightmare';
 let deviceMode='computer';
 $('chooseComputer').addEventListener('click',()=>{deviceMode='computer';document.body.classList.remove('mobile-mode');$('deviceChoice').style.display='none';$('menu').style.display='grid'});
 $('chooseMobile').addEventListener('click',()=>{deviceMode='mobile';document.body.classList.add('mobile-mode');$('deviceChoice').style.display='none';$('menu').style.display='grid'});
@@ -409,7 +409,7 @@ $('worldGrid').addEventListener('click',e=>{const button=e.target.closest('butto
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
 // Reduce look sensitivity as the camera zooms in; the settings slider remains the master sensitivity.
 function zoomAdjustedSensitivity(){const zoomOutAmount=(5.5-zoom)/5.5;return sensitivity*(.4+.6*zoomOutAmount)}
-$('difficulty').onchange=e=>{difficultyMode=e.target.value;showToast('Difficulty: '+e.target.options[e.target.selectedIndex].text,difficultyMode==='easy'?'Larger collection range and helpful clues':difficultyMode==='hard'?'Tiny collection range, fewer clues and tougher parkour':'A balanced hunt')};
+$('difficulty').onchange=e=>{difficultyMode=e.target.value;showToast('Difficulty: '+e.target.options[e.target.selectedIndex].text,difficultyMode==='easy'?'Larger collection range and helpful clues':difficultyMode==='nightmare'?'Near-touch collection, almost no clues and five-step puzzles':difficultyMode==='hard'?'Tiny collection range, fewer clues and tougher parkour':'A balanced hunt')};
 $('closeCollection').onclick=()=>$('collection').style.display='none';$('collectionBtn').addEventListener('pointerdown',e=>{e.preventDefault();openCollection()});
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyM')openCollection();if(e.code==='Escape'&&$('collection').style.display==='block')$('collection').style.display='none';if(e.code==='ShiftLeft'||e.code==='ShiftRight')locked=!locked});
 document.addEventListener('keyup',e=>keys[e.code]=false);
@@ -546,13 +546,13 @@ for(const b of bones){
 for(const puzzle of floorPuzzles){
  if(puzzle.complete)continue;
  for(const pad of puzzle.pads){
-  const close=Math.hypot(player.x-pad.x,player.z-pad.z)<.85&&player.y<1.1;
+  const close=Math.hypot(player.x-pad.x,player.z-pad.z)<.62&&player.y<1.1;
   if(close&&!pad.pressed){
    pad.pressed=true;
    if(pad.index===puzzle.order[puzzle.next]){
     puzzle.next++;pad.mesh.material=mat(0x67d69b);pad.mark.material=mat(0xffffff);
-    showToast('PUZZLE CLUE '+puzzle.next+' / 3','Correct symbol. Find the next one.');
-    if(puzzle.next===3){puzzle.complete=true;puzzle.dog.visible=true;showToast('HIDDEN DOG REVEALED',puzzle.name+' has appeared in the hideout.');}
+    showToast('PUZZLE CLUE '+puzzle.next+' / 5','Correct symbol. Find the next one.');
+    if(puzzle.next===5){puzzle.complete=true;puzzle.dog.visible=true;showToast('HIDDEN DOG REVEALED',puzzle.name+' has appeared in the hideout.');}
    }else{
     puzzle.next=0;
     for(const resetPad of puzzle.pads){resetPad.mesh.material=mat(0x4a5260);resetPad.pressed=false;}
@@ -564,7 +564,11 @@ for(const puzzle of floorPuzzles){
 }
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
 for(const f of flatDogs){if(!f.found&&Math.hypot(player.x-f.position.x,player.z-f.position.z)<1.15&&Math.abs(player.y-f.position.y)<2)collectFlatDog(f)}
-const collectRange=difficultyMode==='hard'?.88:difficultyMode==='normal'?1.08:1.55;const clueRange=difficultyMode==='hard'?1.9:difficultyMode==='normal'?3.1:5.2;if(nearest<collectRange){collect(nearDog)}else if(nearest<clueRange){$('hint').textContent=difficultyMode==='hard'?'You hear something nearby...':'Get closer to discover this pet';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
+const collectRange=difficultyMode==='nightmare'?.48:difficultyMode==='hard'?.68:difficultyMode==='normal'?1.02:1.55;
+const clueRange=difficultyMode==='nightmare'?.82:difficultyMode==='hard'?1.35:difficultyMode==='normal'?2.8:5.2;
+if(nearest<collectRange&&Math.abs(player.y-nearDog.position.y)<1.25){collect(nearDog)}
+else if(nearest<clueRange){$('hint').textContent=difficultyMode==='nightmare'?'Something is close. Find it yourself.':difficultyMode==='hard'?'You hear something nearby...':'Get closer to discover this pet';$('hint').classList.add('show')}
+else{$('hint').classList.remove('show');nearDog=null}
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
