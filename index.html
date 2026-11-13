@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Find the Dogs</title>
+<title>Find the Pets</title>
 <style>
 :root{--glass:rgba(12,20,30,.66);--line:rgba(255,255,255,.14);--gold:#ffd56a}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a25;color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}canvas{display:block}
@@ -46,13 +46,28 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-se
 #deviceChoice .actions button{min-width:150px}
 body.mobile-mode #bottom{display:none}
 
+/* Cleaner presentation */
+:root{--glass:rgba(12,22,32,.82);--line:rgba(226,239,247,.16);--gold:#f4cf78}
+.panel{backdrop-filter:blur(18px);border:1px solid rgba(224,239,248,.18);box-shadow:0 16px 44px rgba(4,12,20,.28)}
+#brand,#progress{background:rgba(12,25,36,.88);border-radius:12px}
+#brand{font-size:16px;letter-spacing:.08em}
+#hint{top:22%;max-width:min(90vw,420px);white-space:normal;text-align:center;background:rgba(12,25,36,.94);border:1px solid #ffffff26;border-radius:12px}
+#bottom{background:rgba(12,25,36,.72);border:1px solid #ffffff20;border-radius:12px}
+#menu,#deviceChoice{background:radial-gradient(ellipse at 50% 25%,rgba(55,106,111,.55),transparent 55%),linear-gradient(145deg,#08131d,#142b35)}
+#menu .card,#deviceChoice .card{background:rgba(10,22,31,.9);border:1px solid rgba(226,239,247,.2);box-shadow:0 24px 80px #0008;border-radius:22px}
+button{transition:filter .15s,transform .15s}button:hover{filter:brightness(1.08)}
+#collection{background:rgba(5,13,21,.97)}#collection .wrap{max-width:960px}
+#dogs{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.dog{background:linear-gradient(145deg,#ffffff12,#ffffff06);border-color:#ffffff1a;border-radius:12px;min-height:108px}
+.dog.locked{opacity:.58}
+@media(max-width:600px){#brand{top:10px;left:10px;padding:9px 11px;font-size:13px}#progress{top:10px;right:10px;min-width:132px;padding:9px 10px}#progress strong{font-size:17px}#progress #boneCount,#progress #secretCount{font-size:9px!important}#settingsBtn,#resetBtn,#worldsBtn{top:68px!important;padding:8px 10px!important;font-size:9px!important}#resetBtn{left:94px!important}#worldsBtn{left:164px!important}#bottom{bottom:10px;font-size:10px;max-width:90vw;white-space:normal;text-align:center}}
 </style>
 </head>
 <body>
 <div id="game"></div>
 <div id="hud">
- <div id="brand" class="panel">FIND THE DOGS<small>EXPLORE • DISCOVER • COLLECT</small></div>
- <div id="progress" class="panel"><div><strong id="count">0 / 31</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
+ <div id="brand" class="panel">FIND THE PETS<small>EXPLORE • DISCOVER • COLLECT</small></div>
+ <div id="progress" class="panel"><div><strong id="count">0 / 31</strong> <span style="opacity:.7;font-size:11px">PETS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button><button id="resetBtn" class="secondary" style="position:absolute;top:76px;left:112px;pointer-events:auto;padding:9px 13px;font-size:11px">RESET</button><button id="worldsBtn" class="secondary" style="position:absolute;top:76px;left:194px;pointer-events:auto;padding:9px 13px;font-size:11px">WORLDS</button>
  <div id="worlds" class="panel"><h3>WORLD SELECT</h3><p id="worldHint">Find 5 dogs to unlock fast travel. Every area has its own secrets.</p><div id="worldGrid"><button data-world="park">DOG PARK<span>Starting world</span></button><button data-world="desert">DESERT RUINS<span>Pyramid and buried route</span></button><button data-world="frost">FROST PEAK<span>Ice caves and ledges</span></button><button data-world="swamp">MUSHROOM SWAMP<span>Hidden paths and logs</span></button><button data-world="blockbyte">BLOCKBYTE DISTRICT<span>Buildings and vault</span></button><button data-world="fern">FERN GROTTO<span>Quiet woodland hideout</span></button><button data-world="crystal">CRYSTAL COVE<span>Crystal formations</span></button><button data-world="bamboo">BAMBOO HOLLOW<span>Overgrown secret nook</span></button><button data-world="mushroom">MUSHROOM NOOK<span>Small hidden clearing</span></button></div></div><div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard" selected>Tracker</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="areaStatus" class="panel" style="position:absolute;top:112px;right:16px;padding:8px 12px;font-size:11px;display:none">BLOCKBYTE DISTRICT</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
@@ -62,10 +77,10 @@ body.mobile-mode #bottom{display:none}
  <div class="touchzone" id="lookzone"></div><div id="movezone"></div><div class="stick" id="stick"><div class="nub" id="nub"></div></div>
  <div class="mobileBtns"><button id="shiftBtn" class="secondary">SHIFT LOCK</button><button id="collectionBtn" class="secondary">DOGS</button><button id="sprintBtn" class="secondary">SPRINT</button><button id="jumpBtn" class="jump">JUMP</button></div>
 </div>
-<div id="toast"><strong id="toastTitle">Dog found!</strong><span id="toastText"></span></div>
-<div id="deviceChoice"><div class="card panel"><div class="eyebrow">WELCOME TO THE GREAT DOG HUNT</div><h2>How are you playing?</h2><p>Choose your device to set up the best controls and screen layout.</p><div class="actions"><button id="chooseComputer">COMPUTER</button><button id="chooseMobile" class="secondary">PHONE / TABLET</button></div></div></div>
-<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT DOG HUNT</div><h1>Find the<br>Dogs.</h1><p>Explore more biomes and tiny hideouts. Find smaller hidden dogs, solve symbol puzzles, search paintings and conquer skill-based obbies.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: walk into a dog to add it to your collection.</p></div></div>
-<div id="collection"><div class="wrap"><div class="eyebrow">YOUR FIELD GUIDE</div><h2>Dog collection</h2><p id="collectionSub" style="color:#bac8d2"></p><div id="dogs"></div><button id="closeCollection" class="secondary">BACK TO GAME</button></div></div>
+<div id="toast"><strong id="toastTitle">Pet found!</strong><span id="toastText"></span></div>
+<div id="deviceChoice"><div class="card panel"><div class="eyebrow">WELCOME TO THE PET HUNT</div><h2>How are you playing?</h2><p>Choose your device to set up the best controls and screen layout.</p><div class="actions"><button id="chooseComputer">COMPUTER</button><button id="chooseMobile" class="secondary">PHONE / TABLET</button></div></div></div>
+<div id="menu"><div class="card panel"><div class="eyebrow">THE GREAT PET HUNT</div><h1>Find the<br>Pets.</h1><p>Explore a polished world of hidden pets, secret places, clever puzzles and skill-based challenges. Some pets are easy to spot. Others take patience and observation.</p><div class="actions"><button id="play">START EXPLORING</button></div><p style="font-size:11px;margin:18px 0 0;opacity:.55">Tip: get close to a pet to add it to your collection.</p></div></div>
+<div id="collection"><div class="wrap"><div class="eyebrow">YOUR FIELD GUIDE</div><h2>Pet collection</h2><p id="collectionSub" style="color:#bac8d2"></p><div id="dogs"></div><button id="closeCollection" class="secondary">BACK TO GAME</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const $=id=>document.getElementById(id);
@@ -244,7 +259,7 @@ const snout=new THREE.Mesh(new THREE.SphereGeometry(.2,12,10),detail);snout.scal
 for(const side of [-1,1]){const leg=new THREE.Mesh(new THREE.CylinderGeometry(.105,.12,.48,10),fur);leg.position.set(side*.34,.3,.25);leg.castShadow=true;g.add(leg);const leg2=leg.clone();leg2.position.z=-.45;g.add(leg2)}
 const tail=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.55,8),fur);tail.position.set(0,.95,-.68);tail.rotation.x=-1;g.add(tail);
 g.userData={name,found:false,baseY:0,phase:Math.random()*6};scene.add(g);dogs.push(g);return g}
-const dogs=[];
+const dogs=[];const extraPets=[];
 const bones=[];
 let bonesFound=0;
 const boneMaterial=mat(0xffe5a1),boneGlow=mat(0xffc84d);
@@ -264,6 +279,19 @@ function makeBone(x,z){
 [[-28,-8],[42,-36],[-48,38],[5,-55],[55,5]].forEach(p=>makeBone(p[0],p[1]));
 function updateBoneCounter(){$('boneCount').textContent='GOLDEN BONES: '+bonesFound+' / 5';}
 
+function makePet(name,kind,color,accent,x,z,scale=1){
+ const g=new THREE.Group(),fur=mat(color),detail=mat(accent),dark=mat(0x20252c);
+ const body=new THREE.Mesh(new THREE.SphereGeometry(.58,18,14),fur);body.scale.set(1.25,.78,.9);body.position.y=.65;g.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.37,18,14),fur);head.position.set(0,1.05,.5);g.add(head);
+ for(const s of [-1,1])g.add(sphere(.045,dark,s*.14,1.12,.82));
+ if(kind==='cat'||kind==='fox')for(const s of [-1,1]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.17,.52,8),detail);ear.position.set(s*.24,1.48,.48);ear.rotation.z=s*-.22;g.add(ear)}
+ if(kind==='bunny')for(const s of [-1,1]){const ear=new THREE.Mesh(new THREE.SphereGeometry(.14,10,10),detail);ear.scale.set(.7,2.5,.65);ear.position.set(s*.17,1.55,.42);g.add(ear)}
+ if(kind==='bird'){const beak=new THREE.Mesh(new THREE.ConeGeometry(.13,.35,5),mat(0xf0b54f));beak.rotation.x=Math.PI/2;beak.position.set(0,1.02,.9);g.add(beak);for(const s of [-1,1]){const wing=new THREE.Mesh(new THREE.SphereGeometry(.24,10,8),detail);wing.scale.set(1,.6,1.5);wing.position.set(s*.48,.68,.05);g.add(wing)}}
+ if(kind==='turtle'){const shell=new THREE.Mesh(new THREE.SphereGeometry(.52,16,12),detail);shell.scale.set(1.2,.7,1);shell.position.set(0,.85,-.05);g.add(shell)}
+ if(kind==='fox'){const tail=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),detail);tail.scale.set(.8,.8,2.3);tail.position.set(0,.75,-.85);g.add(tail)}
+ else{const tail=new THREE.Mesh(new THREE.SphereGeometry(.13,10,8),detail);tail.position.set(0,.75,-.7);g.add(tail)}
+ g.position.set(x,0,z);g.scale.setScalar(scale);g.userData={name,kind,phase:Math.random()*6};scene.add(g);dogs.push(g);extraPets.push({name,kind});return g;
+}
 const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
 dogDefs.push(
@@ -276,6 +304,7 @@ dogDefs.push(
 ['Vault Pup',0x263647,0x65f0dc,81,-65,.85],['Cipher',0x344354,0x9667d8,87,-63,.82],
 ['Obby',0x4c9fbd,0xffd35c,70,-51,.85]);
 dogDefs.forEach(d=>makeDog(...d));
+[['Whiskers','cat',0xd28e67,0xf0c39a,-43,-56,.82],['Copper','fox',0xb96f39,0xf2d3a2,43,-55,.86],['Thistle','bunny',0xe4d9c8,0xb9a9a0,-43,57,.78],['Pebbleback','turtle',0x6c9b72,0x3e6650,14,-64,.9],['Pip','bird',0x5d9fc4,0xd8e9f2,78,25,.72]].forEach(p=>makePet(...p));
 // Puzzle dogs are hidden until each three-symbol floor sequence is solved.
 const puzzleDogs=[{name:'Glyph',color:0x9b83d4,accent:0xe2d5ff,x:0,z:86,order:[0,2,1]},{name:'Prism',color:0x5ba6c4,accent:0xc7f0fa,x:91,z:8,order:[1,0,2]},{name:'Bamboo',color:0x5b9d56,accent:0xb6d98a,x:-8,z:-86,order:[2,1,0]}];
 const floorPuzzles=[];
@@ -362,9 +391,9 @@ for(const side of [-1,1]){
 }
 scene.add(avatar);
 const player=new THREE.Vector3(0,0,48);const horizontalVelocity=new THREE.Vector3();const keys={};const clock=new THREE.Clock();
-function updateProgress(){$('count').textContent=found.size+' / '+(dogDefs.length+flatDogs.length+floorPuzzles.length);$('fill').style.width=(found.size/(dogDefs.length+flatDogs.length+floorPuzzles.length)*100)+'%';}
+function updateProgress(){$('count').textContent=found.size+' / '+(dogDefs.length+extraPets.length+flatDogs.length+floorPuzzles.length);$('fill').style.width=(found.size/(dogDefs.length+flatDogs.length+floorPuzzles.length)*100)+'%';}
 function showToast(title,sub){$('toastTitle').textContent=title;$('toastText').textContent=sub;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
-function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});flatDogs.forEach(f=>{const got=found.has(f.name);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'2D':'?')+'</div><b>'+(got?f.name:'Hidden painting dog')+'</b><span>'+(got?'Collected':'Inspect the paintings')+'</span>';$('dogs').appendChild(el)});floorPuzzles.forEach(p=>{const got=found.has(p.name);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':p.complete?'!':'?')+'</div><b>'+(got?p.name:'Puzzle dog')+'</b><span>'+(got?'Collected':p.complete?'Revealed — find it nearby':'Solve the hideout symbols')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of '+(dogDefs.length+flatDogs.length+floorPuzzles.length)+' discovered';}
+function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});extraPets.forEach(p=>{const got=found.has(p.name);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?p.kind.toUpperCase():'?')+'</div><b>'+(got?p.name:'Undiscovered pet')+'</b><span>'+(got?'Collected':'Search the world')+'</span>';$('dogs').appendChild(el)});flatDogs.forEach(f=>{const got=found.has(f.name);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'2D':'?')+'</div><b>'+(got?f.name:'Hidden painting dog')+'</b><span>'+(got?'Collected':'Inspect the paintings')+'</span>';$('dogs').appendChild(el)});floorPuzzles.forEach(p=>{const got=found.has(p.name);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':p.complete?'!':'?')+'</div><b>'+(got?p.name:'Puzzle dog')+'</b><span>'+(got?'Collected':p.complete?'Revealed — find it nearby':'Solve the hideout symbols')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of '+(dogDefs.length+flatDogs.length+floorPuzzles.length)+' discovered';}
 function openCollection(){$('collection').style.display='block';renderCollection();document.exitPointerLock?.()}
 function collectFlatDog(flat){if(!flat||flat.found)return;flat.found=true;found.add(flat.name);flat.picture.visible=false;flat.frame.material=mat(0xffd56a);updateProgress();showToast('SECRET PAINTING DOG FOUND',flat.name+' was hiding in the picture!');renderCollection();}
 function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===dogDefs.length+flatDogs.length+floorPuzzles.length)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
@@ -535,7 +564,7 @@ for(const puzzle of floorPuzzles){
 }
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
 for(const f of flatDogs){if(!f.found&&Math.hypot(player.x-f.position.x,player.z-f.position.z)<1.15&&Math.abs(player.y-f.position.y)<2)collectFlatDog(f)}
-const collectRange=difficultyMode==='hard'?1.0:difficultyMode==='normal'?1.45:1.9;const clueRange=difficultyMode==='hard'?2.3:difficultyMode==='normal'?4.2:7.0;if(nearest<collectRange){collect(nearDog)}else if(nearest<clueRange){$('hint').textContent=difficultyMode==='hard'?'You hear something nearby...':'Walk into '+nearDog.userData.name+' to collect';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
+const collectRange=difficultyMode==='hard'?.88:difficultyMode==='normal'?1.08:1.55;const clueRange=difficultyMode==='hard'?1.9:difficultyMode==='normal'?3.1:5.2;if(nearest<collectRange){collect(nearDog)}else if(nearest<clueRange){$('hint').textContent=difficultyMode==='hard'?'You hear something nearby...':'Get closer to discover this pet';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
