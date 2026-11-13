@@ -223,7 +223,7 @@ box(42,12,.7,caveWalls,-72,-8,-26);box(42,12,.7,caveWalls,-72,-8,16);box(.7,12,4
 const undergroundPlatforms=[];
 function underStep(x,z,y,w=2.7,d=2.7,color=0x8c70c7){const mesh=box(w,.45,d,mat(color),x,y-.225,z);undergroundPlatforms.push({x,z,top:y,w,d,mesh});}
 // Underground challenge: short precision jumps, a balance beam, then a final wraparound.
-[[-88,-5,-11],[-85,-2,-10.3],[-82,1,-9.6],[-79,4,-8.9],[-76,7,-8.2],[-73,10,-7.5],[-70,13,-6.8],[-67,16,-6.1],[-64,19,-5.4],[-61,22,-4.7],[-58,25,-4]].forEach((p,i)=>underStep(p[0],p[1],p[2],2.35,2.35,[0x8c70c7,0x4d9fba,0x66b98b][i%3]));
+[[-88,-5,-11],[-85,-2,-10.3],[-82,1,-9.6],[-79,4,-8.9],[-76,7,-8.2],[-73,10,-7.5],[-70,7,-6.8],[-67,4,-6.1],[-64,1,-5.4],[-61,-2,-4.7],[-58,-5,-4]].forEach((p,i)=>underStep(p[0],p[1],p[2],2.35,2.35,[0x8c70c7,0x4d9fba,0x66b98b][i%3]));
 underStep(-75,4,-7.9,6,.85,0xc18ae8);
 for(const p of [[-82,1,-9.6],[-70,13,-6.8],[-61,22,-4.7]])obbyHazard(p[0],p[1],p[2]+.15,.85,.85);
 const underExit=box(3,.25,3,mat(0x55e0b1),-57,-1.8,-5);
@@ -282,9 +282,9 @@ function makeDogPainting(x,y,z,rotation,color,name){
  const picture=new THREE.Mesh(new THREE.PlaneGeometry(1.85,1.85),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));picture.position.copy(frame.position);picture.rotation.y=rotation;picture.position.z+=rotation===0?.105:0;picture.position.x+=rotation!==0?.105:0;scene.add(picture);
  flatDogs.push({name,position:new THREE.Vector3(x,y,z),found:false,frame,picture});
 }
-makeDogPainting(-72,4,-33,0,'#c69b59','Canvas Corgi');
-makeDogPainting(99,3,70,Math.PI/2,'#9bd6e8','Frost Sketch');
-makeDogPainting(-99,3,70,-Math.PI/2,'#547f68','Swamp Doodle');
+makeDogPainting(-72,2.2,-33,0,'#c69b59','Canvas Corgi');
+makeDogPainting(99,2.2,70,Math.PI/2,'#9bd6e8','Frost Sketch');
+makeDogPainting(-99,2.2,70,-Math.PI/2,'#547f68','Swamp Doodle');
 
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
 let sprintEnergy=100;let difficultyMode='hard';
@@ -397,6 +397,7 @@ if(velocityY<=0){
 if(!undergroundMode&&!onGround&&player.y<=0){player.y=0;velocityY=0;onGround=true}
 if(undergroundMode&&!onGround&&player.y<=-14){player.y=-14;velocityY=0;onGround=true}
 if(!undergroundMode&&Math.hypot(player.x+72,player.z+5)<1.55&&player.y<8.2){undergroundMode=true;player.set(-88,-10.5,-5);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.copy(underCheckpoint);onGround=true;showToast('PYRAMID TRAP!','You fell through the false floor. Beat the underground obby!')}
+if(undergroundMode&&Math.hypot(player.x+73,player.z+10)<2.2&&activeCheckpoint.x!==-73){activeCheckpoint.set(-73,-7.5,-7.5);showToast('CAVE CHECKPOINT','Your underground progress is saved.')}
 if(undergroundMode&&Math.hypot(player.x+57,player.z+5)<2.1&&player.y<0){undergroundMode=false;player.set(-72,0,-35);velocityY=0;horizontalVelocity.set(0,0);activeCheckpoint.set(-72,0,-35);showToast('CAVE ESCAPED','You conquered the pyramid challenge!')}
 if(undergroundMode&&player.y<-20){player.copy(underCheckpoint);velocityY=0;horizontalVelocity.set(0,0);showToast('FELL!','Back to the underground checkpoint.')}
 
