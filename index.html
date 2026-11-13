@@ -49,7 +49,7 @@ body.mobile-mode #bottom{display:none}
  <div id="brand" class="panel">FIND THE DOGS<small>EXPLORE • DISCOVER • COLLECT</small></div>
  <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
- <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal" selected>Adventurer</option><option value="hard">Tracker</option></select></label></div>
+ <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard" selected>Tracker</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · M collection</div>
 </div>
@@ -146,7 +146,7 @@ const obbySteps=[
 obbySteps.forEach(p=>obbyPlatform(p[0],p[1],p[2],p[3],p[4],p[5]));
 // The wide raised pads are joined by clear, deliberate jumps; no decorative bridge floats below them.
 courseHoop(10,41,2.8);courseHoop(31,24,5.2,0x74c9e6);
-obbyHazard(18,37,2.4,1.8,1.8);obbyHazard(28,27,4.0,1.8,1.8);
+obbyHazard(18,37,2.4,2.5,2.4);obbyHazard(28,27,4.0,2.5,2.4);obbyHazard(23,32,3.2,2.1,2.1);obbyHazard(33,22,4.0,2.2,2.2);
 const launchPad=box(2.5,.2,2.5,mat(0x36d5d0),33,4.12,22);
 const launchRing=new THREE.Mesh(new THREE.TorusGeometry(1.05,.08,8,28),mat(0x9ff8ec));launchRing.rotation.x=Math.PI/2;launchRing.position.set(33,4.26,22);scene.add(launchRing);
 function obbyMarker(x,y,z,color){
@@ -193,7 +193,7 @@ const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
 dogDefs.forEach(d=>makeDog(...d));
 let found=new Set(),yaw=0,pitch=0,locked=false,sensitivity=1,invert=true,zoom=0,velocityY=0,onGround=true,nearDog=null,playing=false,jumpHeld=false,sprintHeld=false;
-let sprintEnergy=100;
+let sprintEnergy=100;let difficultyMode='hard';
 let deviceMode='computer';
 $('chooseComputer').addEventListener('click',()=>{deviceMode='computer';document.body.classList.remove('mobile-mode');$('deviceChoice').style.display='none';$('menu').style.display='grid'});
 $('chooseMobile').addEventListener('click',()=>{deviceMode='mobile';document.body.classList.add('mobile-mode');$('deviceChoice').style.display='none';$('menu').style.display='grid'});
@@ -233,7 +233,7 @@ $('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsB
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
 // Reduce look sensitivity as the camera zooms in; the settings slider remains the master sensitivity.
 function zoomAdjustedSensitivity(){const zoomOutAmount=(5.5-zoom)/5.5;return sensitivity*(.4+.6*zoomOutAmount)}
-$('difficulty').onchange=e=>{const v=e.target.value;showToast('Difficulty: '+e.target.options[e.target.selectedIndex].text,v==='easy'?'Dogs are easier to spot':v==='hard'?'Dogs are more hidden':'A balanced hunt')};
+$('difficulty').onchange=e=>{difficultyMode=e.target.value;showToast('Difficulty: '+e.target.options[e.target.selectedIndex].text,difficultyMode==='easy'?'Larger collection range and helpful clues':difficultyMode==='hard'?'Tiny collection range, fewer clues and tougher parkour':'A balanced hunt')};
 $('closeCollection').onclick=()=>$('collection').style.display='none';$('collectionBtn').addEventListener('pointerdown',e=>{e.preventDefault();openCollection()});
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyM')openCollection();if(e.code==='Escape'&&$('collection').style.display==='block')$('collection').style.display='none';if(e.code==='ShiftLeft'||e.code==='ShiftRight')locked=!locked});
 document.addEventListener('keyup',e=>keys[e.code]=false);
@@ -276,9 +276,9 @@ if(keys.KeyW||keys.ArrowUp)move.add(forward);if(keys.KeyS||keys.ArrowDown)move.s
 move.addScaledVector(forward,-stickVec.y);move.addScaledVector(right,stickVec.x);if(move.lengthSq()>0)move.normalize();
 // Accelerate smoothly, with less control while airborne and gentle ground friction.
 const wantsSprint=keys.ControlLeft||sprintHeld;
-if(wantsSprint&&sprintEnergy>0)sprintEnergy=Math.max(0,sprintEnergy-34*dt);else sprintEnergy=Math.min(100,sprintEnergy+23*dt);
+const drain=difficultyMode==='hard'?48:difficultyMode==='normal'?34:25;const recharge=difficultyMode==='hard'?15:23;if(wantsSprint&&sprintEnergy>0)sprintEnergy=Math.max(0,sprintEnergy-drain*dt);else sprintEnergy=Math.min(100,sprintEnergy+recharge*dt);
 const sprinting=wantsSprint&&sprintEnergy>0;
-const speed=sprinting?12:7;
+const speed=sprinting?(difficultyMode==='hard'?10:difficultyMode==='normal'?11:12):(difficultyMode==='hard'?6.5:7);
 $('staminaFill').style.width=sprintEnergy+'%';$('staminaValue').textContent=Math.round(sprintEnergy)+'%';
 const targetVelocity=move.clone().multiplyScalar(speed);
 const acceleration=onGround?(move.lengthSq()>.001?30:24):9;
@@ -302,7 +302,7 @@ if(!onGround&&player.y<=0){player.y=0;velocityY=0;onGround=true}
 if(jumpHeld&&onGround)jump();
 launchCooldown=Math.max(0,launchCooldown-dt);
 for(const h of obbyHazards){
- if(Math.abs(player.x-h.x)<h.w/2&&Math.abs(player.z-h.z)<h.d/2&&Math.abs(player.y-h.top)<1.25){
+ if(Math.abs(player.x-h.x)<h.w/2&&Math.abs(player.z-h.z)<h.d/2&&Math.abs(player.y-h.top)<(difficultyMode==='hard'?1.65:1.25)){
   player.copy(activeCheckpoint);velocityY=0;horizontalVelocity.set(0,0);onGround=true;showToast('OOPS! TRY AGAIN','You returned to your last checkpoint.');break;
  }
 }
@@ -349,7 +349,7 @@ for(const b of bones){
  }
 }
 nearDog=null;let nearest=999;for(const d of dogs){if(!d.visible)continue;d.position.y=Math.sin(clock.elapsedTime*2+d.userData.phase)*.09;const dx=d.position.x-player.x,dz=d.position.z-player.z,dd=Math.hypot(dx,dz);if(dd<nearest){nearest=dd;nearDog=d}}
-if(nearest<1.45){collect(nearDog)}else if(nearest<4.2){$('hint').textContent='Walk into '+nearDog.userData.name+' to collect';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
+const collectRange=difficultyMode==='hard'?1.0:difficultyMode==='normal'?1.45:1.9;const clueRange=difficultyMode==='hard'?2.3:difficultyMode==='normal'?4.2:7.0;if(nearest<collectRange){collect(nearDog)}else if(nearest<clueRange){$('hint').textContent=difficultyMode==='hard'?'You hear something nearby...':'Walk into '+nearDog.userData.name+' to collect';$('hint').classList.add('show')}else{$('hint').classList.remove('show');nearDog=null}
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
