@@ -60,16 +60,16 @@ button{transition:filter .15s,transform .15s}button:hover{filter:brightness(1.08
 #dogs{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .dog{background:linear-gradient(145deg,#ffffff12,#ffffff06);border-color:#ffffff1a;border-radius:12px;min-height:108px}
 .dog.locked{opacity:.58}
-@media(max-width:600px){#brand{top:10px;left:10px;padding:9px 11px;font-size:13px}#progress{top:10px;right:10px;min-width:132px;padding:9px 10px}#progress strong{font-size:17px}#progress #boneCount,#progress #secretCount{font-size:9px!important}#settingsBtn,#resetBtn,#worldsBtn{top:68px!important;padding:8px 10px!important;font-size:9px!important}#resetBtn{left:94px!important}#worldsBtn{left:164px!important}#bottom{bottom:10px;font-size:10px;max-width:90vw;white-space:normal;text-align:center}}
+@media(max-width:600px){#brand{top:10px;left:10px;padding:9px 11px;font-size:13px}#progress{top:10px;right:10px;min-width:132px;padding:9px 10px}#progress strong{font-size:17px}#progress #secretCount{font-size:9px!important}#settingsBtn,#resetBtn,#worldsBtn{top:68px!important;padding:8px 10px!important;font-size:9px!important}#resetBtn{left:94px!important}#worldsBtn{left:164px!important}#bottom{bottom:10px;font-size:10px;max-width:90vw;white-space:normal;text-align:center}}
 </style>
 </head>
 <body>
 <div id="game"></div>
 <div id="hud">
  <div id="brand" class="panel">FIND THE PETS<small>EXPLORE • DISCOVER • COLLECT</small></div>
- <div id="progress" class="panel"><div><strong id="count">0 / 36</strong> <span style="opacity:.7;font-size:11px">PETS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
+ <div id="progress" class="panel"><div><strong id="count">0 / 36</strong> <span style="opacity:.7;font-size:11px">PETS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button><button id="resetBtn" class="secondary" style="position:absolute;top:76px;left:112px;pointer-events:auto;padding:9px 13px;font-size:11px">RESET</button><button id="worldsBtn" class="secondary" style="position:absolute;top:76px;left:194px;pointer-events:auto;padding:9px 13px;font-size:11px">WORLDS</button>
- <div id="worlds" class="panel"><h3>WORLD SELECT</h3><p id="worldHint">Find 5 dogs to unlock fast travel. Every area has its own secrets.</p><div id="worldGrid"><button data-world="park">DOG PARK<span>Starting world</span></button><button data-world="desert">DESERT RUINS<span>Pyramid and buried route</span></button><button data-world="frost">FROST PEAK<span>Ice caves and ledges</span></button><button data-world="swamp">MUSHROOM SWAMP<span>Hidden paths and logs</span></button><button data-world="blockbyte">BLOCKBYTE DISTRICT<span>Buildings and vault</span></button><button data-world="fern">FERN GROTTO<span>Quiet woodland hideout</span></button><button data-world="crystal">CRYSTAL COVE<span>Crystal formations</span></button><button data-world="bamboo">BAMBOO HOLLOW<span>Overgrown secret nook</span></button><button data-world="mushroom">MUSHROOM NOOK<span>Small hidden clearing</span></button></div></div><div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard">Tracker</option><option value="nightmare" selected>Nightmare</option></select></label></div>
+ <div id="worlds" class="panel"><h3>WORLD SELECT</h3><p id="worldHint">Find 5 pets to unlock fast travel. Every area has its own secrets.</p><div id="worldGrid"><button data-world="park">DOG PARK<span>Starting world</span></button><button data-world="desert">DESERT RUINS<span>Pyramid and buried route</span></button><button data-world="frost">FROST PEAK<span>Ice caves and ledges</span></button><button data-world="swamp">MUSHROOM SWAMP<span>Hidden paths and logs</span></button><button data-world="blockbyte">BLOCKBYTE DISTRICT<span>Buildings and vault</span></button><button data-world="fern">FERN GROTTO<span>Quiet woodland hideout</span></button><button data-world="crystal">CRYSTAL COVE<span>Crystal formations</span></button><button data-world="bamboo">BAMBOO HOLLOW<span>Overgrown secret nook</span></button><button data-world="mushroom">MUSHROOM NOOK<span>Small hidden clearing</span></button></div></div><div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard">Tracker</option><option value="nightmare" selected>Nightmare</option></select></label></div>
  <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="areaStatus" class="panel" style="position:absolute;top:112px;right:16px;padding:8px 12px;font-size:11px;display:none">BLOCKBYTE DISTRICT</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · M collection</div>
 </div>
@@ -260,25 +260,6 @@ for(const side of [-1,1]){const leg=new THREE.Mesh(new THREE.CylinderGeometry(.1
 const tail=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.55,8),fur);tail.position.set(0,.95,-.68);tail.rotation.x=-1;g.add(tail);
 g.scale.setScalar(scale*.52);g.userData={name,found:false,baseY:0,phase:Math.random()*6};scene.add(g);dogs.push(g);return g}
 const dogs=[];const extraPets=[];
-const bones=[];
-let bonesFound=0;
-const boneMaterial=mat(0xffe5a1),boneGlow=mat(0xffc84d);
-function makeBone(x,z){
- const g=new THREE.Group();
- const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.095,.095,.62,10),boneMaterial);
- shaft.rotation.z=Math.PI/2;g.add(shaft);
- for(const side of [-1,1])for(const offset of [-1,1]){
-  const end=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8),boneMaterial);
-  end.position.set(side*.34,offset*.11,0);g.add(end);
- }
- const halo=new THREE.Mesh(new THREE.TorusGeometry(.48,.025,6,24),boneGlow);
- halo.rotation.x=Math.PI/2;g.add(halo);
- g.position.set(x,.8,z);g.userData.phase=Math.random()*6;
- scene.add(g);bones.push(g);
-}
-[[-28,-8],[42,-36],[-48,38],[5,-55],[55,5]].forEach(p=>makeBone(p[0],p[1]));
-function updateBoneCounter(){$('boneCount').textContent='GOLDEN BONES: '+bonesFound+' / 5';}
-
 function makePet(name,kind,color,accent,x,z,scale=1){
  const g=new THREE.Group(),fur=mat(color),detail=mat(accent),dark=mat(0x20252c);fur.color.multiplyScalar(.58);detail.color.multiplyScalar(.62);
  const body=new THREE.Mesh(new THREE.SphereGeometry(.58,18,14),fur);body.scale.set(1.25,.78,.9);body.position.y=.65;g.add(body);
@@ -305,6 +286,17 @@ dogDefs.push(
 ['Obby',0x4c9fbd,0xffd35c,70,-51,.85]);
 dogDefs.forEach(d=>makeDog(...d));
 [['Whiskers','cat',0xd28e67,0xf0c39a,-43,-56,.82],['Copper','fox',0xb96f39,0xf2d3a2,43,-55,.86],['Thistle','bunny',0xe4d9c8,0xb9a9a0,-43,57,.78],['Pebbleback','turtle',0x6c9b72,0x3e6650,14,-64,.9],['Pip','bird',0x5d9fc4,0xd8e9f2,78,25,.72]].forEach(p=>makePet(...p));
+// Obby finish rewards: one hidden-in-plain-sight pet waits at each course exit.
+function addObbyReward(name,kind,color,accent,x,y,z){
+ const pet=makePet(name,kind,color,accent,x,z,.9);
+ pet.position.y=y;
+ pet.userData.phase=Math.random()*6;
+}
+addObbyReward('Summit','fox',0xb9783f,0xf0c68e,38,4.8,13.8);
+addObbyReward('Vaultbit','cat',0x657b9c,0x9fe6e0,72,7.1,-51);
+addObbyReward('Froststep','bunny',0xb7dce8,0xf0fbff,80,6.15,61);
+addObbyReward('Mireling','turtle',0x557c62,0x9cc18a,-69,5.1,56);
+addObbyReward('Deepstone','bird',0x9676bd,0xd8c9f4,-72,0,-35);
 // Puzzle dogs are hidden until each three-symbol floor sequence is solved.
 const puzzleDogs=[{name:'Glyph',color:0x9b83d4,accent:0xe2d5ff,x:0,z:86,order:[0,2,1,2,0]},{name:'Prism',color:0x5ba6c4,accent:0xc7f0fa,x:91,z:8,order:[1,0,2,0,1]},{name:'Bamboo',color:0x5b9d56,accent:0xb6d98a,x:-8,z:-86,order:[2,1,0,1,2]}];
 const floorPuzzles=[];
@@ -404,8 +396,8 @@ function resetPlayer(){
 $('resetBtn').addEventListener('click',e=>{e.preventDefault();resetPlayer()});
 document.addEventListener('keydown',e=>{if(e.code==='KeyR'&&playing)resetPlayer()});
 function start(){playing=true;$('deviceChoice').style.display='none';$('menu').style.display='none';$('settings').style.display='none';$('worlds').style.display='none';if(deviceMode==='computer')renderer.domElement.requestPointerLock?.()}
-$('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsBtn').onclick=()=>{$('settings').style.display=$('settings').style.display==='block'?'none':'block';$('worlds').style.display='none'};$('worldsBtn').onclick=()=>{$('worlds').style.display=$('worlds').style.display==='block'?'none':'block';$('settings').style.display='none';$('worldHint').textContent=found.size>=5?'Fast travel unlocked. Choose a place to explore.':'Find '+(5-found.size)+' more dog'+(5-found.size===1?'':'s')+' to unlock fast travel.'};
-$('worldGrid').addEventListener('click',e=>{const button=e.target.closest('button[data-world]');if(!button)return;if(found.size<5){showToast('FAST TRAVEL LOCKED','Find '+(5-found.size)+' more dogs first.');return;}const destinations={park:[0,0,48],desert:[-90,0,-5],frost:[72,0,70],swamp:[-72,0,70],blockbyte:[70,0,-62],fern:[0,0,86],crystal:[91,0,8],bamboo:[-8,0,-86],mushroom:[-91,0,87]};const p=destinations[button.dataset.world];if(!p)return;undergroundMode=false;player.set(p[0],p[1],p[2]);activeCheckpoint.copy(player);velocityY=0;horizontalVelocity.set(0,0);onGround=true;jumpHeld=false;sprintHeld=false;$('worlds').style.display='none';showToast('TRAVELLED TO '+button.textContent.split('\n')[0],'Explore the area and look for hidden dogs.');});
+$('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsBtn').onclick=()=>{$('settings').style.display=$('settings').style.display==='block'?'none':'block';$('worlds').style.display='none'};$('worldsBtn').onclick=()=>{$('worlds').style.display=$('worlds').style.display==='block'?'none':'block';$('settings').style.display='none';$('worldHint').textContent=found.size>=5?'Fast travel unlocked. Choose a place to explore.':'Find '+(5-found.size)+' more pet'+(5-found.size===1?'':'s')+' to unlock fast travel.'};
+$('worldGrid').addEventListener('click',e=>{const button=e.target.closest('button[data-world]');if(!button)return;if(found.size<5){showToast('FAST TRAVEL LOCKED','Find '+(5-found.size)+' more pets first.');return;}const destinations={park:[0,0,48],desert:[-90,0,-5],frost:[72,0,70],swamp:[-72,0,70],blockbyte:[70,0,-62],fern:[0,0,86],crystal:[91,0,8],bamboo:[-8,0,-86],mushroom:[-91,0,87]};const p=destinations[button.dataset.world];if(!p)return;undergroundMode=false;player.set(p[0],p[1],p[2]);activeCheckpoint.copy(player);velocityY=0;horizontalVelocity.set(0,0);onGround=true;jumpHeld=false;sprintHeld=false;$('worlds').style.display='none';showToast('TRAVELLED TO '+button.textContent.split('\n')[0],'Explore the area and look for hidden pets.');});
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
 // Reduce look sensitivity as the camera zooms in; the settings slider remains the master sensitivity.
 function zoomAdjustedSensitivity(){const zoomOutAmount=(5.5-zoom)/5.5;return sensitivity*(.4+.6*zoomOutAmount)}
@@ -534,14 +526,6 @@ if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&pl
 for(let i=0;i<secretSwitches.length;i++){const s=secretSwitches[i];if(!s.found&&Math.hypot(player.x-s.group.position.x,player.z-s.group.position.z)<1.35){s.found=true;s.group.children[1].material=blockYellow;s.group.scale.setScalar(1.25);const n=secretSwitches.filter(v=>v.found).length;$('secretCount').textContent='SECRET SWITCHES: '+n+' / 3';showToast('HIDDEN SWITCH FOUND',n===3?'The vault door has unlocked!':'Find the other hidden switches.');if(n===3){vaultDoor.position.y=7;showToast('SECRET VAULT OPENED','A hidden room has been revealed.');}}}
 if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&player.y<1.5){player.set(84,0,-65);velocityY=0;horizontalVelocity.set(0,0);showToast('SECRET ROOM','You found the hidden vault.');}
 $('areaStatus').textContent=undergroundMode?'PYRAMID UNDERGROUND':player.x>38&&player.z< -30?'BLOCKBYTE DISTRICT':player.x< -45&&player.z<25?'DESERT RUINS':player.x>45&&player.z>40?'FROST PEAK':player.x< -45&&player.z>40?'MUSHROOM SWAMP':Math.hypot(player.x,player.z-86)<18?'FERN GROTTO':Math.hypot(player.x-91,player.z-8)<18?'CRYSTAL COVE':Math.hypot(player.x+8,player.z+86)<18?'BAMBOO HOLLOW':Math.hypot(player.x+91,player.z-87)<18?'MUSHROOM NOOK':'DOG PARK';
-for(const b of bones){
- if(!b.visible)continue;
- b.rotation.y+=dt*.9;b.position.y=.8+Math.sin(clock.elapsedTime*2+b.userData.phase)*.12;
- if(Math.hypot(b.position.x-player.x,b.position.z-player.z)<1.25){
-  b.visible=false;bonesFound++;updateBoneCounter();
-  showToast('GOLDEN BONE FOUND',bonesFound===5?'You found every bonus bone!':'A bonus hidden around the park.');
- }
-}
 // Follow the floor symbols in the correct order to reveal each hidden dog.
 for(const puzzle of floorPuzzles){
  if(puzzle.complete)continue;
@@ -572,7 +556,7 @@ else{$('hint').classList.remove('show');nearDog=null}
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
-updateProgress();updateBoneCounter();$('obbyStatus').style.display='block';$('areaStatus').style.display='block';
+updateProgress();$('obbyStatus').style.display='block';$('areaStatus').style.display='block';
 </script>
 </body>
 </html>
