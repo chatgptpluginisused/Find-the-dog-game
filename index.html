@@ -7,7 +7,7 @@
 <style>
 :root{--glass:rgba(12,20,30,.66);--line:rgba(255,255,255,.14);--gold:#ffd56a}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a25;color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}canvas{display:block}
-#game{position:fixed;inset:0}#hud{position:fixed;inset:0;pointer-events:none}
+#game{position:fixed;inset:0}#hud{position:fixed;inset:0;z-index:30;pointer-events:none}#hud button,#hud [role=button]{position:relative;z-index:31;pointer-events:auto}
 .panel{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px);border-radius:16px;box-shadow:0 12px 40px #0005}
 #brand{position:absolute;top:16px;left:16px;padding:12px 16px;font-weight:900;letter-spacing:.04em;font-size:18px}#brand small{display:block;font-size:10px;opacity:.7;letter-spacing:.18em;font-weight:700;margin-top:2px}
 #progress{position:absolute;top:16px;right:16px;padding:12px 15px;min-width:190px}#progress strong{font-size:20px}#bar{height:7px;background:#ffffff26;border-radius:9px;margin-top:8px;overflow:hidden}#fill{height:100%;width:0;background:linear-gradient(90deg,#73e6a0,#d6f57c);border-radius:9px;transition:width .25s}
@@ -251,14 +251,14 @@ const underExit=box(3,.25,3,mat(0x55e0b1),-57,-1.8,-5);
 let undergroundMode=false;
 const underCheckpoint=new THREE.Vector3(-88,-11,-5);
 
-function makeDog(name,color,accent,x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);const fur=mat(color),detail=mat(accent),dark=mat(0x29252a),nose=mat(0x18171a);
+function makeDog(name,color,accent,x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);const fur=mat(color),detail=mat(accent),dark=mat(0x29252a),nose=mat(0x18171a);fur.color.multiplyScalar(.58);detail.color.multiplyScalar(.62);
 const body=new THREE.Mesh(new THREE.SphereGeometry(.62,18,14),fur);body.scale.set(1.25,.78,.82);body.position.y=.75;body.castShadow=true;g.add(body);
 const head=new THREE.Mesh(new THREE.SphereGeometry(.43,18,14),fur);head.position.set(0,1.25,.57);head.castShadow=true;g.add(head);
 for(const side of [-1,1]){const ear=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),detail);ear.scale.set(.65,1.3,.55);ear.position.set(side*.3,1.56,.52);ear.rotation.z=side*-.3;g.add(ear);const eye=sphere(.055,dark,side*.16,1.32, .94);g.add(eye)}
 const snout=new THREE.Mesh(new THREE.SphereGeometry(.2,12,10),detail);snout.scale.set(1,.72,.8);snout.position.set(0,1.12,.92);g.add(snout);const n=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),nose);n.position.set(0,1.16,1.08);g.add(n);
 for(const side of [-1,1]){const leg=new THREE.Mesh(new THREE.CylinderGeometry(.105,.12,.48,10),fur);leg.position.set(side*.34,.3,.25);leg.castShadow=true;g.add(leg);const leg2=leg.clone();leg2.position.z=-.45;g.add(leg2)}
 const tail=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.55,8),fur);tail.position.set(0,.95,-.68);tail.rotation.x=-1;g.add(tail);
-g.userData={name,found:false,baseY:0,phase:Math.random()*6};scene.add(g);dogs.push(g);return g}
+g.scale.setScalar(scale*.52);g.userData={name,found:false,baseY:0,phase:Math.random()*6};scene.add(g);dogs.push(g);return g}
 const dogs=[];const extraPets=[];
 const bones=[];
 let bonesFound=0;
@@ -280,7 +280,7 @@ function makeBone(x,z){
 function updateBoneCounter(){$('boneCount').textContent='GOLDEN BONES: '+bonesFound+' / 5';}
 
 function makePet(name,kind,color,accent,x,z,scale=1){
- const g=new THREE.Group(),fur=mat(color),detail=mat(accent),dark=mat(0x20252c);
+ const g=new THREE.Group(),fur=mat(color),detail=mat(accent),dark=mat(0x20252c);fur.color.multiplyScalar(.58);detail.color.multiplyScalar(.62);
  const body=new THREE.Mesh(new THREE.SphereGeometry(.58,18,14),fur);body.scale.set(1.25,.78,.9);body.position.y=.65;g.add(body);
  const head=new THREE.Mesh(new THREE.SphereGeometry(.37,18,14),fur);head.position.set(0,1.05,.5);g.add(head);
  for(const s of [-1,1])g.add(sphere(.045,dark,s*.14,1.12,.82));
@@ -290,7 +290,7 @@ function makePet(name,kind,color,accent,x,z,scale=1){
  if(kind==='turtle'){const shell=new THREE.Mesh(new THREE.SphereGeometry(.52,16,12),detail);shell.scale.set(1.2,.7,1);shell.position.set(0,.85,-.05);g.add(shell)}
  if(kind==='fox'){const tail=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),detail);tail.scale.set(.8,.8,2.3);tail.position.set(0,.75,-.85);g.add(tail)}
  else{const tail=new THREE.Mesh(new THREE.SphereGeometry(.13,10,8),detail);tail.position.set(0,.75,-.7);g.add(tail)}
- g.position.set(x,0,z);g.scale.setScalar(scale);g.userData={name,kind,phase:Math.random()*6};scene.add(g);dogs.push(g);extraPets.push({name,kind});return g;
+ g.position.set(x,0,z);g.scale.setScalar(scale*.52);g.userData={name,kind,phase:Math.random()*6};scene.add(g);dogs.push(g);extraPets.push({name,kind});return g;
 }
 const dogDefs=[
 ['Biscuit',0xc88a4d,0xf1c48c,-14,-10,.95],['Snowball',0xf1eee4,0xc7d5df,28,18,.9],['Midnight',0x292d3d,0x555b72,-34,24,1.05],['Peanut',0xd6b06b,0xf5dba1,11,-34,.85],['Pepper',0x55565c,0xbfc1c5,39,-9,.9],['Rosie',0xc66d78,0xf2b6b9,-8,43,.95],['Cocoa',0x694638,0xb9825e,-43,-28,1.1],['Mochi',0xe5c7a0,0xffeee0,31,43,.8],['Scout',0xb8a46b,0xeee0a8,49,31,1],['Shadow',0x171b23,0x737b88,-48,5,.9]];
@@ -434,7 +434,7 @@ sprintButton.addEventListener('pointerup',releaseSprint);sprintButton.addEventLi
 function toggleShiftLock(){locked=!locked;$('shiftBtn').style.background=locked?'#ffe28a':'#ffffff18';$('shiftBtn').style.color=locked?'#14202b':'white'}
 $('shiftBtn').addEventListener('pointerdown',e=>{e.preventDefault();toggleShiftLock()});
 let stickVec={x:0,y:0},stickActive=false,stickId=null,stickOrigin={x:0,y:0};const stick=$('stick'),nub=$('nub'),movezone=$('movezone');
-movezone.style.cssText='position:absolute;left:0;top:0;width:50%;height:100%;pointer-events:auto;touch-action:none';
+movezone.style.cssText='position:absolute;z-index:1;left:0;top:0;width:50%;height:100%;pointer-events:auto;touch-action:none';
 movezone.addEventListener('pointerdown',e=>{if(stickActive)return;stickActive=true;stickId=e.pointerId;stickOrigin={x:e.clientX,y:e.clientY};stick.style.display='block';stick.style.left=stickOrigin.x+'px';stick.style.top=stickOrigin.y+'px';movezone.setPointerCapture(stickId);moveStick(e)});
 movezone.addEventListener('pointermove',e=>{if(stickActive&&e.pointerId===stickId)moveStick(e)});
 function moveStick(e){let dx=e.clientX-stickOrigin.x,dy=e.clientY-stickOrigin.y;const len=Math.hypot(dx,dy),max=42;if(len>max){dx=dx/len*max;dy=dy/len*max}nub.style.transform='translate('+dx+'px,'+dy+'px)';stickVec={x:dx/max,y:dy/max}}
