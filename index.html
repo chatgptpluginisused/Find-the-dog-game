@@ -47,10 +47,10 @@ body.mobile-mode #bottom{display:none}
 <div id="game"></div>
 <div id="hud">
  <div id="brand" class="panel">FIND THE DOGS<small>EXPLORE • DISCOVER • COLLECT</small></div>
- <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div></div>
+ <div id="progress" class="panel"><div><strong id="count">0 / 10</strong> <span style="opacity:.7;font-size:11px">DOGS FOUND</span></div><div id="bar"><div id="fill"></div></div><div id="boneCount" style="font-size:10px;opacity:.78;margin-top:7px">GOLDEN BONES: 0 / 5</div><div id="secretCount" style="font-size:10px;opacity:.78;margin-top:5px">SECRET SWITCHES: 0 / 3</div></div>
  <button id="settingsBtn" class="secondary" style="position:absolute;top:76px;left:16px;pointer-events:auto;padding:9px 13px;font-size:11px">SETTINGS</button>
  <div id="settings" class="panel"><label>Camera sensitivity <input id="sens" type="range" min=".3" max="2.5" step=".1" value="1"></label><label>Reverse vertical camera <input id="invert" type="checkbox" checked></label><label>Difficulty <select id="difficulty"><option value="easy">Explorer</option><option value="normal">Adventurer</option><option value="hard" selected>Tracker</option></select></label></div>
- <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
+ <div id="hint" class="panel">A dog is nearby — walk closer!</div><div id="cross"></div><div id="obbyStatus" class="panel" style="position:absolute;top:76px;right:16px;padding:8px 12px;font-size:11px;display:none">DOG PARKOUR: REACH THE GOLD GATE</div><div id="areaStatus" class="panel" style="position:absolute;top:112px;right:16px;padding:8px 12px;font-size:11px;display:none">BLOCKBYTE DISTRICT</div><div id="stamina"><div id="staminaLabel"><span>SPRINT ENERGY</span><span id="staminaValue">100%</span></div><div id="staminaTrack"><div id="staminaFill"></div></div></div>
  <div id="bottom" class="panel">WASD move · Mouse look · Space jump · Shift lock · Walk into dogs to collect · M collection</div>
 </div>
 <div id="mobile">
@@ -64,8 +64,8 @@ body.mobile-mode #bottom{display:none}
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const $=id=>document.getElementById(id);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x91c9e8);scene.fog=new THREE.Fog(0x91c9e8,35,125);
-const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.1,250);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x91c9e8);scene.fog=new THREE.Fog(0x91c9e8,45,185);
+const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.1,350);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;$('game').appendChild(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xd9efff,0x52613a,2));
 const sun=new THREE.DirectionalLight(0xffedca,2.5);sun.position.set(-25,40,20);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-65;sun.shadow.camera.right=65;sun.shadow.camera.top=65;sun.shadow.camera.bottom=-65;scene.add(sun);
@@ -73,7 +73,7 @@ const mats={grass:new THREE.MeshStandardMaterial({color:0x5b9d56}),grass2:new TH
 const mat=(c,r=.8)=>new THREE.MeshStandardMaterial({color:c,roughness:r});
 const box=(w,h,d,m,x,y,z)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o};
 const sphere=(r,m,x,y,z,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;scene.add(o);return o};
-const ground=box(160,1,160,mats.grass,0,-.55,0);ground.receiveShadow=true;
+const ground=box(220,1,220,mats.grass,0,-.55,0);ground.receiveShadow=true;
 function tree(x,z,scale=1,forest=false){const t=new THREE.Group();t.position.set(x,0,z);t.scale.setScalar(scale);const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.22,.34,2.4,8),mats.trunk);trunk.position.y=1.2;trunk.castShadow=true;t.add(trunk);for(let i=0;i<3;i++){const crown=new THREE.Mesh(new THREE.ConeGeometry(1.55-i*.22,2.6,8),i%2?mats.leaf2:mats.leaf);crown.position.y=2.6+i*.8;crown.castShadow=true;t.add(crown)}scene.add(t)}
 // Winding paths and a small pond
 const path=box(5,.08,72,mats.path,0,.02,4);path.rotation.y=.16;
@@ -87,23 +87,7 @@ for(let i=0;i<24;i++){const x=(Math.random()-.5)*65,z=(Math.random()-.5)*65;if(M
 for(let i=0;i<14;i++){const x=(Math.random()-.5)*90,z=(Math.random()-.5)*90;sphere(.7,mats.stone,x,.1,z,1.4,.7,1)}
 // Decorative sign
 box(2.6,1.5,.18,mats.wood,0,1.2,32);const signTop=box(2.9,.15,.3,mat(0x573b2b),0,2,32);
-// A second, block-built Roblox-style region: Blockbyte District.
-const blockConcrete=mat(0x8795a4),blockDark=mat(0x344354),blockBlue=mat(0x368ed0),blockNeon=mat(0x65f0dc),blockYellow=mat(0xffd35c),blockPurple=mat(0x9667d8);
-box(58,.18,58,mat(0x596b7b),69,.02,-62);
-for(let ix=0;ix<8;ix++)for(let iz=0;iz<8;iz++){box(6.8,.16,6.8,(ix+iz)%2?mat(0x647b8d):mat(0x71899b),43+ix*7.4,.16,-91+iz*7.4);}
-function blockBuilding(x,z,w,h,d,color){box(w,h,d,mat(color),x,h/2,z);for(let xx=-1;xx<=1;xx++)for(let zz=-1;zz<=1;zz++){if(Math.abs(xx)+Math.abs(zz)===0)continue;box(.22,.22,.22,blockNeon,x+xx*(w/2-.5),h+.12,z+zz*(d/2-.5));}box(w*.55,.35,.18,blockYellow,x,h*.68,z+d/2+.11);}
-blockBuilding(49,-48,12,9,10,0x3e7297);blockBuilding(87,-49,13,13,11,0x73569a);blockBuilding(48,-78,11,7,12,0x8b704b);blockBuilding(88,-78,14,10,12,0x4d806e);
-const secretSwitches=[];
-function secretSwitch(x,y,z){const g=new THREE.Group();const base=new THREE.Mesh(new THREE.BoxGeometry(.8,.8,.25),blockDark);g.add(base);const button=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),blockNeon);button.position.z=.2;g.add(button);g.position.set(x,y,z);scene.add(g);secretSwitches.push({group:g,found:false});}
-secretSwitch(45,1.2,-89);secretSwitch(91,1.2,-43);secretSwitch(64,1.2,-76);
-box(17,.35,15,mat(0x263647),84,.05,-65);
-box(17,5,.6,blockDark,84,2.5,-72.2);box(.6,5,15,blockDark,75.5,2.5,-65);box(.6,5,15,blockDark,92.5,2.5,-65);box(17,5,.6,blockDark,84,2.5,-57.5);box(17,.5,15,blockDark,84,5.15,-65);
-const vaultDoor=box(4,4,.45,blockPurple,84,2.1,-72.0);
-const vaultGlow=new THREE.Mesh(new THREE.TorusGeometry(2.1,.12,10,32),blockNeon);vaultGlow.position.set(84,2.2,-71.6);scene.add(vaultGlow);
-for(let i=0;i<6;i++){const y=1.1+i*2.05;const p=box(5,.55,5,mat([0x4c9fbd,0x9167c9,0x54b68a][i%3]),58+i*2.2,y,-58-i*2.4);obbyPlatforms.push({x:58+i*2.2,z:-58-i*2.4,top:y+.275,w:5,d:5,mesh:p});}
-for(let i=0;i<5;i++){const x=45+i*5.5,z=-37-i*2.5,top=1.4+i*.9;obbyPlatform(x,z,top,3.8,3.8,[0x4d9bc0,0x8b63c6,0x4aa77b][i%3]);}
-for(let i=0;i<4;i++)obbyHazard(52+i*5.5,-40-i*2.5,2.3+i*.9,1.5,1.5);
-box(4,.25,4,blockYellow,72,7.1,-51);
+
 // More park landmarks: cosy dog cabins, a picnic shelter and warm trail lights.
 function dogCabin(x,z,wallColor,roofColor){
  const walls=mat(wallColor),roof=mat(roofColor),door=mat(0x292a30);
@@ -177,6 +161,23 @@ const gateLeft=new THREE.Mesh(new THREE.BoxGeometry(.3,3.5,.3),gateMat);gateLeft
 const gateRight=gateLeft.clone();gateRight.position.x=36;finishGate.add(gateRight);
 const gateTop=new THREE.Mesh(new THREE.BoxGeometry(4.3,.3,.3),gateMat);gateTop.position.set(38,6,17);finishGate.add(gateTop);
 const gateGlow=new THREE.Mesh(new THREE.TorusGeometry(1.45,.08,10,32),mat(0xffe7a0));gateGlow.position.set(38,4.45,17);gateGlow.rotation.y=Math.PI/2;finishGate.add(gateGlow);scene.add(finishGate);
+// A second, block-built Roblox-style region: Blockbyte District.
+const blockConcrete=mat(0x8795a4),blockDark=mat(0x344354),blockBlue=mat(0x368ed0),blockNeon=mat(0x65f0dc),blockYellow=mat(0xffd35c),blockPurple=mat(0x9667d8);
+box(58,.18,58,mat(0x596b7b),69,.02,-62);
+for(let ix=0;ix<8;ix++)for(let iz=0;iz<8;iz++){box(6.8,.16,6.8,(ix+iz)%2?mat(0x647b8d):mat(0x71899b),43+ix*7.4,.16,-91+iz*7.4);}
+function blockBuilding(x,z,w,h,d,color){box(w,h,d,mat(color),x,h/2,z);for(let xx=-1;xx<=1;xx++)for(let zz=-1;zz<=1;zz++){if(Math.abs(xx)+Math.abs(zz)===0)continue;box(.22,.22,.22,blockNeon,x+xx*(w/2-.5),h+.12,z+zz*(d/2-.5));}box(w*.55,.35,.18,blockYellow,x,h*.68,z+d/2+.11);}
+blockBuilding(49,-48,12,9,10,0x3e7297);blockBuilding(87,-49,13,13,11,0x73569a);blockBuilding(48,-78,11,7,12,0x8b704b);blockBuilding(88,-78,14,10,12,0x4d806e);
+const secretSwitches=[];
+function secretSwitch(x,y,z){const g=new THREE.Group();const base=new THREE.Mesh(new THREE.BoxGeometry(.8,.8,.25),blockDark);g.add(base);const button=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),blockNeon);button.position.z=.2;g.add(button);g.position.set(x,y,z);scene.add(g);secretSwitches.push({group:g,found:false});}
+secretSwitch(45,1.2,-89);secretSwitch(91,1.2,-43);secretSwitch(64,1.2,-76);
+box(17,.35,15,mat(0x263647),84,.05,-65);
+box(17,5,.6,blockDark,84,2.5,-72.2);box(.6,5,15,blockDark,75.5,2.5,-65);box(.6,5,15,blockDark,92.5,2.5,-65);box(17,5,.6,blockDark,84,2.5,-57.5);box(17,.5,15,blockDark,84,5.15,-65);
+const vaultDoor=box(4,4,.45,blockPurple,84,2.1,-72.0);
+const vaultGlow=new THREE.Mesh(new THREE.TorusGeometry(2.1,.12,10,32),blockNeon);vaultGlow.position.set(84,2.2,-71.6);scene.add(vaultGlow);
+for(let i=0;i<6;i++){const y=1.1+i*2.05;const p=box(5,.55,5,mat([0x4c9fbd,0x9167c9,0x54b68a][i%3]),58+i*2.2,y,-58-i*2.4);obbyPlatforms.push({x:58+i*2.2,z:-58-i*2.4,top:y+.275,w:5,d:5,mesh:p});}
+for(let i=0;i<5;i++){const x=45+i*5.5,z=-37-i*2.5,top=1.4+i*.9;obbyPlatform(x,z,top,3.8,3.8,[0x4d9bc0,0x8b63c6,0x4aa77b][i%3]);}
+for(let i=0;i<4;i++)obbyHazard(52+i*5.5,-40-i*2.5,2.3+i*.9,1.5,1.5);
+box(4,.25,4,blockYellow,72,7.1,-51);
 
 function makeDog(name,color,accent,x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);const fur=mat(color),detail=mat(accent),dark=mat(0x29252a),nose=mat(0x18171a);
 const body=new THREE.Mesh(new THREE.SphereGeometry(.62,18,14),fur);body.scale.set(1.25,.78,.82);body.position.y=.75;body.castShadow=true;g.add(body);
@@ -249,11 +250,11 @@ for(const side of [-1,1]){
 }
 scene.add(avatar);
 const player=new THREE.Vector3(0,0,48);const horizontalVelocity=new THREE.Vector3();const keys={};const clock=new THREE.Clock();
-function updateProgress(){$('count').textContent=found.size+' / 10';$('fill').style.width=(found.size/10*100)+'%';}
+function updateProgress(){$('count').textContent=found.size+' / '+dogDefs.length;$('fill').style.width=(found.size/dogDefs.length*100)+'%';}
 function showToast(title,sub){$('toastTitle').textContent=title;$('toastText').textContent=sub;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
-function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of 10 discovered';}
+function renderCollection(){$('dogs').innerHTML='';dogDefs.forEach((d,i)=>{const got=found.has(d[0]);const el=document.createElement('div');el.className='dog '+(got?'':'locked');el.innerHTML='<div class="face">'+(got?'DOG':'?')+'</div><b>'+(got?d[0]:'Undiscovered dog')+'</b><span>'+(got?'Collected':'Keep exploring')+'</span>';$('dogs').appendChild(el)});$('collectionSub').textContent=found.size+' of '+dogDefs.length+' discovered';}
 function openCollection(){$('collection').style.display='block';renderCollection();document.exitPointerLock?.()}
-function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===10)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
+function collect(dog=nearDog){if(!dog||found.has(dog.userData.name))return;found.add(dog.userData.name);dog.visible=false;updateProgress();showToast('DOG FOUND: '+dog.userData.name,'Your field guide has been updated.');if(nearDog===dog)nearDog=null;$('hint').classList.remove('show');if(found.size===dogDefs.length)showToast('ALL DOGS FOUND!','You completed the great dog hunt.')}
 function start(){playing=true;$('deviceChoice').style.display='none';$('menu').style.display='none';$('settings').style.display='none';if(deviceMode==='computer')renderer.domElement.requestPointerLock?.()}
 $('play').addEventListener('click',e=>{e.preventDefault();start()});$('settingsBtn').onclick=()=>$('settings').style.display=$('settings').style.display==='block'?'none':'block';
 $('sens').oninput=e=>sensitivity=+e.target.value;$('invert').onchange=e=>invert=e.target.checked;
@@ -311,9 +312,9 @@ const acceleration=onGround?(move.lengthSq()>.001?30:24):9;
 horizontalVelocity.x=THREE.MathUtils.damp(horizontalVelocity.x,targetVelocity.x,acceleration,dt);
 horizontalVelocity.z=THREE.MathUtils.damp(horizontalVelocity.z,targetVelocity.z,acceleration,dt);
 player.addScaledVector(horizontalVelocity,dt);
-player.x=THREE.MathUtils.clamp(player.x,-73,73);player.z=THREE.MathUtils.clamp(player.z,-73,73);
-if(player.x===-73||player.x===73)horizontalVelocity.x=0;
-if(player.z===-73||player.z===73)horizontalVelocity.z=0;
+player.x=THREE.MathUtils.clamp(player.x,-103,103);player.z=THREE.MathUtils.clamp(player.z,-103,103);
+if(player.x===-103||player.x===103)horizontalVelocity.x=0;
+if(player.z===-103||player.z===103)horizontalVelocity.z=0;
 // Gravity and a stable landing on the park floor.
 const previousY=player.y;
 velocityY-=24*dt;player.y+=velocityY*dt;
@@ -368,6 +369,9 @@ if(firstPerson){
 }
 for(let i=0;i<secretSwitches.length;i++){const s=secretSwitches[i];if(!s.found&&Math.hypot(player.x-s.group.position.x,player.z-s.group.position.z)<1.35){s.found=true;s.group.children[1].material=blockYellow;s.group.scale.setScalar(1.25);const n=secretSwitches.filter(v=>v.found).length;$('secretCount').textContent='SECRET SWITCHES: '+n+' / 3';showToast('HIDDEN SWITCH FOUND',n===3?'The vault door has unlocked!':'Find the other hidden switches.');if(n===3){vaultDoor.position.y=7;showToast('SECRET VAULT OPENED','A hidden room has been revealed.');}}}
 if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&player.y<1.5){player.set(84,0,-65);velocityY=0;horizontalVelocity.set(0,0);showToast('SECRET ROOM','You found the hidden vault.');}
+for(let i=0;i<secretSwitches.length;i++){const s=secretSwitches[i];if(!s.found&&Math.hypot(player.x-s.group.position.x,player.z-s.group.position.z)<1.35){s.found=true;s.group.children[1].material=blockYellow;s.group.scale.setScalar(1.25);const n=secretSwitches.filter(v=>v.found).length;$('secretCount').textContent='SECRET SWITCHES: '+n+' / 3';showToast('HIDDEN SWITCH FOUND',n===3?'The vault door has unlocked!':'Find the other hidden switches.');if(n===3){vaultDoor.position.y=7;showToast('SECRET VAULT OPENED','A hidden room has been revealed.');}}}
+if(secretSwitches.every(s=>s.found)&&Math.hypot(player.x-84,player.z+71)<2.4&&player.y<1.5){player.set(84,0,-65);velocityY=0;horizontalVelocity.set(0,0);showToast('SECRET ROOM','You found the hidden vault.');}
+$('areaStatus').textContent=player.x>38&&player.z< -30?'BLOCKBYTE DISTRICT':'DOG PARK';
 for(const b of bones){
  if(!b.visible)continue;
  b.rotation.y+=dt*.9;b.position.y=.8+Math.sin(clock.elapsedTime*2+b.userData.phase)*.12;
@@ -381,7 +385,7 @@ const collectRange=difficultyMode==='hard'?1.0:difficultyMode==='normal'?1.45:1.
 }
 function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);update(dt);renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
-updateProgress();updateBoneCounter();$('obbyStatus').style.display='block';
+updateProgress();updateBoneCounter();$('obbyStatus').style.display='block';$('areaStatus').style.display='block';
 </script>
 </body>
 </html>
