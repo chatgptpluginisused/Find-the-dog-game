@@ -162,7 +162,7 @@ movezone.addEventListener('pointerup',endStick);movezone.addEventListener('point
 const look=$('lookzone');const lookPointers=new Map();let pinchStart=0,pinchZoom=0;
 function pointerDistance(){const p=[...lookPointers.values()];return p.length>=2?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}
 look.addEventListener('pointerdown',e=>{look.setPointerCapture(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size===2){pinchStart=pointerDistance();pinchZoom=zoom}});
-look.addEventListener('pointermove',e=>{if(!lookPointers.has(e.pointerId))return;const previous=lookPointers.get(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size>=2){const distance=pointerDistance();if(pinchStart>0)zoom=THREE.MathUtils.clamp(pinchZoom+(pinchStart-distance)*.025,0,5.5);return}const dx=e.clientX-previous.x,dy=e.clientY-previous.y;yaw-=dx*.006*sensitivity;pitch-=dy*.006*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)});
+look.addEventListener('pointermove',e=>{if(!lookPointers.has(e.pointerId))return;const previous=lookPointers.get(e.pointerId);lookPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(lookPointers.size>=2){const distance=pointerDistance();if(pinchStart>0)zoom=THREE.MathUtils.clamp(pinchZoom+(distance-pinchStart)*.035,0,5.5);return}const dx=e.clientX-previous.x,dy=e.clientY-previous.y;yaw-=dx*.006*sensitivity;pitch-=dy*.006*sensitivity*(invert?-1:1);pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35)});
 function endLook(e){lookPointers.delete(e.pointerId);if(lookPointers.size<2)pinchStart=0}
 look.addEventListener('pointerup',endLook);look.addEventListener('pointercancel',endLook);
 function update(dt){if(!playing)return;
